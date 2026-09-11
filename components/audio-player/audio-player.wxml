@@ -1,0 +1,38 @@
+<!-- 全局语音讲解播放条：读取 utils/audio 全局单例状态 -->
+<view wx:if="{{title}}" class="ap-bar">
+  <!-- 封面缩略图：播放时叠加半透明红色遮罩 -->
+  <view class="ap-cover">
+    <image src="{{cover}}" mode="aspectFill" class="ap-cover-img"></image>
+    <view wx:if="{{playing}}" class="ap-cover-mask"></view>
+  </view>
+  <!-- 中部信息区：解说标题 + 进度条 + 已播/总时长 -->
+  <view class="ap-info">
+    <view class="ap-title">{{title}}</view>
+    <!-- 播放进度 slider：拖动改变进度触发 onSeek；时长为 0 时禁用 -->
+    <view class="ap-progress">
+      <slider
+        class="ap-slider"
+        min="0"
+        max="{{duration > 0 ? duration : 1}}"
+        value="{{currentTime}}"
+        activeColor="#C8102E"
+        backgroundColor="#ECECEC"
+        block-size="12"
+        block-color="#C8102E"
+        disabled="{{duration <= 0}}"
+        bindchange="onSeek"
+      />
+    </view>
+    <view class="ap-time">
+      <text>{{curText}}</text>
+      <text>{{durText}}</text>
+    </view>
+  </view>
+  <!-- 播放 / 暂停切换按钮 -->
+  <view class="ap-btn" bindtap="onToggle">
+    <view wx:if="{{!playing}}" class="ap-play-icon"></view>
+    <view wx:else class="ap-pause-icon"></view>
+  </view>
+  <!-- 关闭播放条 -->
+  <view class="ap-close" bindtap="onClose">×</view>
+</view>

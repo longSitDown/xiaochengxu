@@ -1,0 +1,161 @@
+/* 数字导览：全景横幅入口 + 展区大图卡片 */
+.page {
+  padding-bottom: 40rpx;
+}
+
+/* ---- 720°全景入口 ---- */
+.pano-entry {
+  position: relative;
+  height: 420rpx;
+  overflow: hidden;
+}
+.pano-bg {
+  width: 100%;
+  height: 100%;
+}
+.pano-mask {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20, 4, 8, 0.05) 30%, rgba(20, 4, 8, 0.72) 100%);
+}
+.pano-body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0 40rpx 44rpx;
+  color: #FFFFFF;
+}
+.pano-label {
+  font-size: 44rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.4);
+}
+.pano-desc {
+  font-size: 26rpx;
+  color: rgba(255, 226, 200, 0.95);
+  margin: 10rpx 0 24rpx;
+}
+.pano-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 64rpx;
+  padding: 0 40rpx;
+  border-radius: 32rpx;
+  background: linear-gradient(135deg, var(--red-bright), var(--red-deep));
+  color: #FFFFFF;
+  font-size: 26rpx;
+  box-shadow: 0 6rpx 16rpx rgba(120, 8, 24, 0.45);
+}
+
+/* ---- 展区标题 ---- */
+.hall-head {
+  display: flex;
+  align-items: center;
+  margin: 32rpx 0 24rpx;
+}
+.hall-bar {
+  width: 8rpx;
+  height: 34rpx;
+  border-radius: 4rpx;
+  background: linear-gradient(180deg, var(--red-bright), var(--red-deep));
+  margin-right: 14rpx;
+}
+.hall-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--text-main);
+  flex: 1;
+}
+.hall-count {
+  font-size: 24rpx;
+  color: var(--text-sub);
+}
+
+/* ---- 展区横幅卡片 ---- */
+.hall-list {
+  margin-bottom: 24rpx;
+}
+.hall-card {
+  position: relative;
+  height: 320rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  margin-bottom: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(120, 8, 24, 0.10);
+}
+.hall-cover {
+  width: 100%;
+  height: 100%;
+}
+.hall-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20, 4, 8, 0) 35%, rgba(20, 4, 8, 0.78) 100%);
+}
+.hall-info {
+  position: absolute;
+  left: 32rpx;
+  right: 32rpx;
+  bottom: 26rpx;
+  color: #FFFFFF;
+}
+.hall-seq {
+  display: inline-block;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+  background: rgba(200, 16, 46, 0.85);
+  color: #FFE2C8;
+  font-size: 22rpx;
+  margin-bottom: 12rpx;
+}
+.hall-name {
+  font-size: 38rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.4);
+}
+.hall-meta {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 8rpx;
+}
+
+/* ---- 知识竞赛入口 ---- */
+.quiz-entry {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 28rpx;
+  box-shadow: 0 8rpx 24rpx rgba(120, 8, 24, 0.08);
+}
+.quiz-entry-icon {
+  width: 84rpx;
+  height: 84rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E0604F, #C0392B);
+  color: #FFFFFF;
+  font-size: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+.quiz-entry-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.quiz-entry-desc {
+  font-size: 24rpx;
+  color: var(--text-sub);
+  margin-top: 6rpx;
+}
+.quiz-entry-arrow {
+  color: var(--text-light);
+  font-size: 36rpx;
+}

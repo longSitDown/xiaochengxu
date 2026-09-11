@@ -1,0 +1,62 @@
+<!-- 我的：用户卡 + 统计 + 菜单 -->
+<view class="page">
+  <!-- 用户信息 -->
+  <view class="user-hero">
+    <block wx:if="{{user}}">
+      <image class="user-avatar" src="{{user.avatar}}" mode="aspectFill" />
+      <view class="user-info">
+        <view class="user-name" bindtap="onEditNickname">
+          {{user.nickname}}
+          <text class="user-edit">修改</text>
+        </view>
+        <view class="user-phone">{{user.phone || '未绑定手机号'}}</view>
+      </view>
+    </block>
+    <block wx:else>
+      <image class="user-avatar" src="/images/placeholder.png" mode="aspectFill" />
+      <view class="user-info">
+        <view class="user-name">游客用户</view>
+        <view class="user-phone">登录后可使用预约、答题等功能</view>
+      </view>
+      <view class="user-login-btn" bindtap="onLogin">一键登录</view>
+    </block>
+  </view>
+
+  <view class="container">
+    <!-- 业务统计 -->
+    <view class="stat-card">
+      <view class="stat-item">
+        <view class="stat-num">{{stats.resv}}</view>
+        <view class="stat-label">预约记录</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-num">{{stats.quiz}}</view>
+        <view class="stat-label">答题次数</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-num">{{stats.feedback}}</view>
+        <view class="stat-label">反馈提交</view>
+      </view>
+    </view>
+
+    <!-- 功能菜单 -->
+    <view class="card menu-card">
+      <view class="cell" wx:for="{{menus}}" wx:key="name" data-url="{{item.url}}" bindtap="onMenuTap">
+        <view class="menu-icon mi-{{item.icon}}"></view>
+        <view class="menu-name flex-1">{{item.name}}</view>
+        <view class="cell-arrow"></view>
+      </view>
+    </view>
+
+    <!-- 演示数据管理（仅 mock 模式演示用） -->
+    <view class="card">
+      <view class="cell" bindtap="onResetData">
+        <view class="menu-icon mi-reset"></view>
+        <view class="menu-name flex-1">重置演示数据</view>
+        <view class="cell-arrow"></view>
+      </view>
+    </view>
+
+    <view class="profile-copyright">红色纪念馆 · 传承红色基因</view>
+  </view>
+</view>

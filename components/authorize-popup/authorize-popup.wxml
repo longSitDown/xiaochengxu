@@ -1,0 +1,20 @@
+<!--
+  授权登录弹窗：进入小程序或需要登录时弹出
+  点击「微信授权登录」→ 触发 login 事件（由父级调 userApi.login() 完成登录）
+  点击「暂不登录」→ 触发 cancel 事件（以游客身份浏览，本会话不再重复弹）
+-->
+<view class="auth-mask" wx:if="{{show}}" catchtouchmove="noop">
+  <!-- 弹窗主体：logo + 标题 + 说明文案 + 操作按钮 -->
+  <view class="auth-card">
+    <view class="auth-logo">
+      <image src="/images/logo.png" mode="aspectFit"></image>
+    </view>
+    <view class="auth-title">红色纪念馆</view>
+    <view class="auth-desc">登录后可同步预约记录、答题战绩与意见反馈，方便您随时查看。</view>
+
+    <!-- 微信授权登录（mock 下本地模拟；真实环境走 realLogin） -->
+    <view class="btn btn-primary auth-btn" bindtap="onLogin">微信授权登录</view>
+    <!-- 游客模式：关闭弹窗继续浏览 -->
+    <view class="auth-skip" bindtap="onCancel">暂不登录，先逛逛</view>
+  </view>
+</view>

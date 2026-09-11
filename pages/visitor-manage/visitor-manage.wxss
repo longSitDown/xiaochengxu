@@ -1,0 +1,95 @@
+/* 预约人管理 */
+/* 顶部提示条：金色底色提示身份证核验要求 */
+.vm-tip {
+  padding: 18rpx 24rpx;
+  border-radius: 12rpx;
+  background: var(--gold-light, #FBF4E4);
+  color: var(--gold-text);
+  font-size: 24rpx;
+  margin-bottom: 24rpx;
+}
+/* 预约人卡片 */
+.vm-card {
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+}
+.vm-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 18rpx;
+}
+.vm-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.vm-default {
+  margin-left: 16rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 8rpx;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 20rpx;
+}
+.vm-line {
+  display: flex;
+  align-items: center;
+  padding: 10rpx 0;
+}
+.vm-label {
+  width: 130rpx;
+  font-size: 26rpx;
+  color: var(--text-sub);
+  flex-shrink: 0;
+}
+.vm-value {
+  font-size: 26rpx;
+  color: var(--text-main);
+}
+/* 操作按钮区：顶部横线分隔，右对齐排列 */
+.vm-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid var(--line);
+}
+.vm-act {
+  padding: 10rpx 30rpx;
+  margin-left: 16rpx;
+  border: 2rpx solid var(--line);
+  border-radius: 28rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+}
+/* 删除按钮：红色描边强调 */
+.vm-act-danger {
+  color: var(--primary);
+  border-color: var(--primary-light);
+}
+.empty-btn {
+  margin-top: 24rpx;
+}
+
+/* 悬浮添加按钮（有数据时展示） */
+.fab {
+  position: fixed;
+  right: 32rpx;
+  bottom: calc(env(safe-area-inset-bottom) + 48rpx);
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--red-bright), var(--red-deep));
+  color: #FFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  box-shadow: 0 8rpx 24rpx rgba(200, 16, 46, 0.4);
+}
+.fab-plus {
+  font-size: 48rpx;
+  line-height: 1;
+  margin-bottom: 2rpx;
+}

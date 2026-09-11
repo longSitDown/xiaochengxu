@@ -1,0 +1,46 @@
+<!-- 资讯列表：搜索 + 分类 + 分页列表 -->
+<view class="page">
+  <!-- 搜索框 -->
+  <view class="search-box">
+    <view class="search-icon"></view>
+    <input class="search-input" placeholder="搜索资讯 / 英烈 / 故事" confirm-type="search"
+      value="{{keywords}}" bindinput="onSearchInput" bindconfirm="onSearchConfirm" />
+  </view>
+
+  <!-- 分类标签 -->
+  <scroll-view scroll-x class="cat-scroll" enhanced show-scrollbar="{{false}}">
+    <view class="cat-list">
+      <view class="cat-item {{activeCat === item ? 'cat-active' : ''}}"
+        wx:for="{{categories}}" wx:key="*this" data-cat="{{item}}" bindtap="onCatTap">{{item}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 列表 -->
+  <view class="container">
+    <view wx:if="{{finished && !list.length}}">
+      <empty text="暂无相关资讯" sub="换个分类或关键词试试" />
+    </view>
+
+    <view class="card news-card" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" bindtap="onNewsTap">
+      <view class="news-top">
+        <view class="flex-1">
+          <view class="news-title text-2lines">
+            <text class="tag tag-red" wx:if="{{item.isTop === '1'}}">置顶</text>{{item.title}}
+          </view>
+          <view class="news-summary text-ellipsis">{{item.summary}}</view>
+        </view>
+        <image class="news-cover" src="{{item.cover}}" mode="aspectFill" />
+      </view>
+      <view class="news-meta">
+        <text class="tag tag-red">{{item.category}}</text>
+        <text class="meta-item">{{item.source}}</text>
+        <text class="meta-item">{{item.timeText}}</text>
+        <text class="meta-item">{{item.viewsText}} 浏览</text>
+      </view>
+    </view>
+
+    <!-- 加载中 / 到底提示 -->
+    <view wx:if="{{loading}}" class="load-tip">加载中...</view>
+    <view wx:elif="{{!hasMore && list.length}}" class="load-tip">— 已经到底了 —</view>
+  </view>
+</view>

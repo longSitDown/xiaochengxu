@@ -1,0 +1,79 @@
+<!-- 720°全景展馆：拖拽平移 + 热点 + 顶部信息 + 右侧功能 + 底部章节菜单（参照 UI 设计稿） -->
+<view class="pano-page">
+  <!-- 顶部信息条：返回 + 馆名 + 更多（适配状态栏高度） -->
+  <view class="pano-topbar" style="padding-top:{{statusBarHeight}}px">
+    <view class="pano-back" bindtap="onBack">
+      <text class="pano-back-icon">×</text>
+    </view>
+    <view class="pano-topbar-title">津市革命纪念馆</view>
+    <view class="pano-more" bindtap="onMore">
+      <text class="pano-more-icon">···</text>
+    </view>
+  </view>
+
+  <!-- 创作者 / 人气信息 -->
+  <view class="pano-meta">
+    <text class="pano-meta-item">创作者：{{creator}}</text>
+    <text class="pano-meta-dot">·</text>
+    <text class="pano-meta-item">人气：{{popularity}}</text>
+  </view>
+
+  <!-- 全景视口 -->
+  <view class="pano-viewport" style="width:{{viewportW}}px;height:{{viewportH}}px"
+    bindtouchstart="onTouchStart" bindtouchmove="onTouchMove" bindtouchend="onTouchEnd">
+    <view class="pano-strip {{dragging ? 'pano-dragging' : ''}}"
+      style="width:{{imgW}}px;height:{{viewportH}}px;transform:translateX({{offsetX}}px)">
+      <image class="pano-img" src="/images/panorama.png" mode="fill" />
+      <!-- 展品热点：绝对定位在底图上，按当前章节过滤，点击跳转展品详情 -->
+      <view class="hotspot" wx:for="{{hotspots}}" wx:key="id"
+        style="left:{{item.x}}%;top:{{item.y}}%" data-id="{{item.id}}" catchtap="onHotspotTap">
+        <view class="hotspot-dot"></view>
+        <view class="hotspot-pulse"></view>
+        <view class="hotspot-label">{{item.name}}</view>
+      </view>
+    </view>
+
+    <!-- 视角指示 -->
+    <view class="pano-compass">{{angle}}°</view>
+
+    <!-- 场景标题浮层：切换章节时短暂显示 -->
+    <view class="pano-scene {{sceneShow ? 'pano-scene-show' : ''}}">{{sceneTitle}}</view>
+  </view>
+
+  <!-- 右侧功能按钮组：信息 / 音乐 / 分享 / VR -->
+  <view class="pano-tools">
+    <view class="pano-tool" data-tool="info" bindtap="onToolTap">
+      <view class="pano-tool-icon">ⓘ</view>
+    </view>
+    <view class="pano-tool {{musicPlaying ? 'pano-tool-active' : ''}}" data-tool="music" bindtap="onToolTap">
+      <view class="pano-tool-icon">♪</view>
+    </view>
+    <view class="pano-tool" data-tool="share" bindtap="onToolTap">
+      <view class="pano-tool-icon">⇪</view>
+    </view>
+    <view class="pano-tool {{vrMode ? 'pano-tool-active' : ''}}" data-tool="vr" bindtap="onToolTap">
+      <view class="pano-tool-icon">VR</view>
+    </view>
+  </view>
+
+  <!-- 场景缩略图：横向滚动选择视角 -->
+  <scroll-view scroll-x class="scene-scroll" enhanced show-scrollbar="{{false}}">
+    <view class="scene-list">
+      <view class="scene-thumb {{activeChapter === item.id ? 'scene-thumb-active' : ''}}"
+        wx:for="{{sceneThumbs}}" wx:key="id" data-id="{{item.id}}" bindtap="onSceneTap">
+        <image class="scene-thumb-img" src="{{item.cover}}" mode="aspectFill" />
+        <view class="scene-thumb-name">{{item.name}}</view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 底部章节菜单：场馆风貌 + 各展区（切换热点过滤） -->
+  <scroll-view scroll-x class="chapter-scroll" enhanced show-scrollbar="{{false}}">
+    <view class="chapter-list">
+      <view class="chapter-item {{activeChapter === item.id ? 'chapter-active' : ''}}"
+        wx:for="{{chapters}}" wx:key="id" data-id="{{item.id}}" bindtap="onChapterTap">
+        {{item.name}}
+      </view>
+    </view>
+  </scroll-view>
+</view>

@@ -1,0 +1,123 @@
+/* 意见反馈样式 */
+.fb-tabs {
+  display: flex;
+  background: #FFF;
+  padding: 0 24rpx;
+}
+.fb-tab {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
+  font-size: 30rpx;
+  color: var(--text-sub);
+  position: relative;
+}
+/* 当前激活 Tab：主题色加粗，底部红色横条指示器 */
+.fb-tab-active {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* 激活 Tab 底部的红色渐变横条（left:50% 居中，伪元素绘制） */
+.fb-tab-active::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 8rpx;
+  width: 48rpx;
+  height: 6rpx;
+  margin-left: -24rpx;
+  border-radius: 3rpx;
+  background: linear-gradient(90deg, var(--red-bright), var(--red-deep));
+}
+
+/* 表单 */
+.fb-label {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-main);
+}
+/* 必填红色星号 */
+.fb-required {
+  color: var(--danger);
+}
+.fb-count {
+  margin-top: 8rpx;
+  text-align: right;
+  font-size: 22rpx;
+  color: var(--text-light);
+}
+.fb-contact {
+  margin-top: 16rpx;
+  padding: 20rpx 24rpx;
+  background: #FAF9F7;
+  border: 2rpx solid var(--line);
+  border-radius: 12rpx;
+}
+.fb-contact input {
+  font-size: 28rpx;
+}
+.fb-tip {
+  text-align: center;
+  margin-top: 20rpx;
+  font-size: 22rpx;
+  color: var(--text-light);
+}
+
+/* 我的反馈列表 */
+.fb-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.fb-status {
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+}
+/* 反馈处理状态配色：待处理(橙)/处理中(蓝)/已办结(绿) */
+.fs-wait { background: #FCF0DF; color: var(--warning); }
+.fs-doing { background: #E8F0FC; color: var(--info); }
+.fs-done { background: #E4F4EA; color: var(--success); }
+.fb-time {
+  font-size: 22rpx;
+  color: var(--text-light);
+}
+.fb-content {
+  margin-top: 14rpx;
+  font-size: 28rpx;
+  color: var(--text-main);
+  line-height: 1.6;
+}
+.fb-thumbs {
+  display: flex;
+  margin-top: 14rpx;
+}
+.fb-thumb {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 10rpx;
+  margin-right: 12rpx;
+}
+/* 官方回复条：绿色浅底强调 */
+.fb-reply {
+  display: flex;
+  align-items: center;
+  margin-top: 16rpx;
+  padding: 14rpx 20rpx;
+  background: #E4F4EA;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  color: var(--success);
+}
+.fb-reply-label {
+  font-weight: 600;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+.fb-arrow {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--primary);
+  text-align: right;
+}

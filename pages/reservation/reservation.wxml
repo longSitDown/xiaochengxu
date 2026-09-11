@@ -1,0 +1,121 @@
+<!-- 预约参观（tabBar）：Hero + 预约入口卡 + 开放须知/时间 + 我的预约（参照 UI 设计稿） -->
+<view class="page">
+  <!-- Hero：展馆建筑图 + 标题 -->
+  <view class="hero">
+    <image class="hero-img" src="/images/covers/cover-hall.png" mode="aspectFill" />
+    <view class="hero-mask"></view>
+    <view class="hero-body">
+      <view class="hero-title">预约参观</view>
+      <view class="hero-sub">实名预约 · 凭身份证核验入馆</view>
+    </view>
+  </view>
+
+  <!-- 预约入口卡片：个人 / 团体（悬浮压在 Hero 底部） -->
+  <view class="entry-wrap">
+    <view class="entry-card" data-type="个人" bindtap="goCreate">
+      <view class="entry-ribbon"></view>
+      <view class="entry-figure">个</view>
+      <view class="entry-body">
+        <view class="entry-name">个人预约</view>
+        <view class="entry-desc">1-5 人 · 即约即审</view>
+      </view>
+      <view class="entry-arrow">›</view>
+    </view>
+    <view class="entry-card" data-type="团体" bindtap="goCreate">
+      <view class="entry-ribbon entry-ribbon-gold"></view>
+      <view class="entry-figure entry-figure-gold">团</view>
+      <view class="entry-body">
+        <view class="entry-name">团体预约</view>
+        <view class="entry-desc">10-100 人 · 提前 1-3 个工作日申请</view>
+      </view>
+      <view class="entry-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- 开放须知 / 开放时间 -->
+  <view class="info-card">
+    <view class="info-section">
+      <view class="info-head">
+        <view class="info-icon">📢</view>
+        <text>开放须知</text>
+      </view>
+      <view class="info-text">· 参观人进馆须出示与预约登记一致的身份证原件</view>
+      <view class="info-text">· 个人预约每单限 5 人，团体预约请提前 1-3 个工作日提交</view>
+      <view class="info-text">· 审核结果将通过公众号消息推送通知，请注意查收</view>
+    </view>
+    <view class="info-divider"></view>
+    <view class="info-section">
+      <view class="info-head">
+        <view class="info-icon">🕘</view>
+        <text>开放时间</text>
+      </view>
+      <view class="info-text">· 周二至周日 9:00-17:00（16:30 停止入馆）</view>
+      <view class="info-text">· 周一闭馆，法定节假日开放安排以公告为准</view>
+    </view>
+  </view>
+
+  <!-- 我的预约：标题 + 状态筛选 Tabs -->
+  <view class="mine-head">
+    <view class="mine-bar"></view>
+    <text class="mine-title">我的预约</text>
+  </view>
+  <scroll-view scroll-x class="tab-scroll" enhanced show-scrollbar="{{false}}">
+    <view class="tab-list">
+      <!-- data-tab 传给 onTabTap 用于记录当前选中的筛选状态 -->
+      <view class="tab-item {{activeTab === item ? 'tab-active' : ''}}"
+        wx:for="{{tabs}}" wx:key="*this" data-tab="{{item}}" bindtap="onTabTap">{{item}}</view>
+    </view>
+  </scroll-view>
+
+  <view class="container">
+    <view wx:if="{{!loading && !list.length}}">
+      <empty text="暂无{{activeTab === '全部' ? '' : activeTab}}预约" sub="点击下方按钮预约参观">
+        <view class="btn btn-primary btn-sm empty-btn" bindtap="goCreate">立即预约</view>
+      </empty>
+    </view>
+
+    <!-- 预约卡片：遍历预约列表，点击进入详情；data-id 用于后续跳转定位 -->
+    <view class="card resv-card" wx:for="{{list}}" wx:key="id"
+      data-id="{{item.id}}" bindtap="onItemTap">
+      <view class="resv-head">
+        <!-- 类型角标：团体预约使用金色样式区分 -->
+        <view class="resv-type {{item.type === '团体' ? 'resv-type-group' : ''}}">{{item.type}}预约</view>
+        <!-- 状态文字，statusClass 对应不同状态的样式类（待审核/已通过/已驳回/已取消等） -->
+        <view class="resv-status {{item.statusClass}}">{{item.status}}</view>
+      </view>
+      <view class="resv-date">
+        <view class="resv-date-num">{{item.visitDate}}</view>
+        <view class="resv-date-sub">{{item.weekday}} · {{item.timeSlot}}</view>
+      </view>
+      <view class="resv-info">
+        <view class="resv-line">
+          <text class="resv-label">参观人数</text>
+          <!-- realCount 非空时显示已实名人数 -->
+          <text class="resv-value">{{item.visitorCount}} 人<text class="resv-real" wx:if="{{item.realCount}}"> · 已实名</text></text>
+        </view>
+        <view class="resv-line" wx:if="{{item.organization}}">
+          <text class="resv-label">团体名称</text>
+          <text class="resv-value">{{item.organization}}</text>
+        </view>
+        <view class="resv-line">
+          <text class="resv-label">联系人</text>
+          <text class="resv-value">{{item.contactName}}（{{item.contactPhone}}）</text>
+        </view>
+      </view>
+      <view class="resv-foot">
+        <text class="resv-time">提交于 {{item.timeText}}</text>
+        <text class="resv-arrow">详情 ›</text>
+      </view>
+      <!-- 被驳回且有关注原因时展示驳回原因 -->
+      <view class="resv-reject" wx:if="{{item.status === '已驳回' && item.rejectReason}}">
+        驳回原因：{{item.rejectReason}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 新建预约悬浮按钮 -->
+  <view class="fab" bindtap="goCreate">
+    <view class="fab-plus">+</view>
+    <text>预约</text>
+  </view>
+</view>

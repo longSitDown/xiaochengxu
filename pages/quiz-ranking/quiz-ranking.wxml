@@ -1,0 +1,51 @@
+<!-- 竞赛排行榜：领奖台 + 榜单 -->
+<view class="page">
+  <!-- 前三名领奖台：按亚军/冠军/季军三列展示，冠军最高 -->
+  <view class="podium-wrap" wx:if="{{top3.length}}">
+    <view class="podium {{item.rank === 1 ? 'p-first' : (item.rank === 2 ? 'p-second' : 'p-third')}}"
+      wx:for="{{top3}}" wx:key="rank">
+      <view class="podium-avatar">
+        <image class="podium-avatar-img" src="/images/placeholder.png" mode="aspectFill" />
+        <!-- 名次奖牌：金色/银色/铜色由排名决定 -->
+        <view class="podium-medal m-{{item.medal}}">{{item.rank}}</view>
+      </view>
+      <view class="podium-name text-ellipsis">{{item.userName}}</view>
+      <view class="podium-score">{{item.score}} 分</view>
+      <view class="podium-base">{{item.durationText}}</view>
+    </view>
+  </view>
+
+  <view class="container">
+    <!-- 无任何排名数据时的空状态 -->
+    <view wx:if="{{!loading && !others.length && !top3.length}}">
+      <empty text="暂无排行数据" sub="成为第一个答题的参与者吧" />
+    </view>
+
+    <!-- 完整榜单：第 4 名及之后的排行列表 -->
+    <view class="card" wx:if="{{others.length}}">
+      <view class="block-title">
+        <view class="block-bar"></view>
+        <text>完整榜单</text>
+      </view>
+      <!-- 榜单行：当前用户所在行高亮并加"我"标签 -->
+      <view class="rank-row {{item.userId === myUserId ? 'rank-mine' : ''}}"
+        wx:for="{{others}}" wx:key="rank">
+        <text class="rank-no">{{item.rank}}</text>
+        <view class="rank-avatar">
+          <image class="rank-avatar-img" src="/images/placeholder.png" mode="aspectFill" />
+        </view>
+        <view class="rank-name flex-1 text-ellipsis">
+          {{item.userName}}
+          <text class="tag tag-red" wx:if="{{item.userId === myUserId}}">我</text>
+        </view>
+        <view class="rank-side">
+          <view class="rank-score">{{item.score}} 分</view>
+          <view class="rank-dur">{{item.correctCount}}/{{item.totalCount}} 题 · {{item.durationText}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 排名规则说明 -->
+    <view class="rank-tip">按得分降序排列，同分用时短者在前 · 每人取最好成绩</view>
+  </view>
+</view>

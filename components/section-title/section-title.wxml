@@ -1,0 +1,18 @@
+<!-- 区块标题组件：左侧红色竖条标题 + 右侧可选"更多"入口 -->
+<view class="st">
+  <!-- 头部：左标题 + 右"更多"入口 -->
+  <view class="st-head">
+    <!-- 标题：红色竖条 + 文字 -->
+    <view class="st-title">
+      <view class="st-bar"></view>
+      <text>{{title}}</text>
+    </view>
+    <!-- 右侧"更多"跳转入口（传入 url 才显示） -->
+    <navigator wx:if="{{more}}" url="{{more}}" class="st-more">
+      <text>{{moreText || '更多'}}</text>
+      <text class="st-arrow">›</text>
+    </navigator>
+  </view>
+  <!-- 插槽：承载该区块的主体内容 -->
+  <slot></slot>
+</view>

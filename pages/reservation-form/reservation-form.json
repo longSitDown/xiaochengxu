@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "参观预约",
+  "usingComponents": {
+    "visitor-editor": "/components/visitor-editor/visitor-editor"
+  }
+}

@@ -1,0 +1,73 @@
+/* 文物鉴赏：米色纸感底 + 分类胶囊 + 馆藏卡片 */
+.page {
+  padding: 24rpx 24rpx 40rpx;
+}
+
+/* ---- 分类筛选 ---- */
+.filter-scroll {
+  white-space: nowrap;
+  margin-bottom: 24rpx;
+}
+.filter-list {
+  display: flex;
+  padding: 4rpx 0;
+}
+.filter-item {
+  flex-shrink: 0;
+  padding: 12rpx 36rpx;
+  margin-right: 18rpx;
+  border-radius: 40rpx;
+  background: #FFFFFF;
+  color: var(--gold-text);
+  font-size: 26rpx;
+  border: 2rpx solid transparent;
+}
+.filter-active {
+  background: var(--gold-light);
+  border-color: var(--gold-text);
+  color: var(--red-deep);
+  font-weight: 600;
+}
+
+/* ---- 馆藏卡片 ---- */
+.artifact-card {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  margin-bottom: 28rpx;
+  overflow: hidden;
+  box-shadow: 0 6rpx 20rpx rgba(120, 8, 24, 0.06);
+}
+.artifact-figure {
+  position: relative;
+}
+.artifact-img {
+  width: 100%;
+  height: 400rpx;
+  display: block;
+  background: #F2EFE8;
+}
+/* 分类角标：左下金棕底 */
+.artifact-tag {
+  position: absolute;
+  left: 20rpx;
+  bottom: 20rpx;
+  padding: 6rpx 20rpx;
+  border-radius: 8rpx;
+  background: rgba(120, 8, 24, 0.82);
+  color: #FFE2C8;
+  font-size: 22rpx;
+}
+.artifact-caption {
+  padding: 24rpx 28rpx 28rpx;
+}
+.artifact-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 10rpx;
+}
+.artifact-desc {
+  font-size: 26rpx;
+  color: var(--text-sub);
+  line-height: 1.7;
+}

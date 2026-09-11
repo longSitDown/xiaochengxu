@@ -1,0 +1,122 @@
+<!-- 首页：红色 Hero 横幅 + 8 宫格功能入口 + 新闻资讯（参照 UI 设计稿） -->
+<view class="page">
+  <!-- Hero 顶部横幅：深红渐变 + 搜索/菜单 + 书法标题 + 公告条 -->
+  <view class="hero" style="padding-top:{{statusBarHeight + 16}}px">
+    <!-- 装饰层：斜向纹理 + 金星光晕（纯 CSS） -->
+    <view class="hero-deco"></view>
+    <view class="hero-star hero-star-1"></view>
+    <view class="hero-star hero-star-2"></view>
+
+    <!-- 顶部操作栏：搜索 + 菜单 -->
+    <view class="hero-topbar">
+      <view class="hero-search" bindtap="goSearch">
+        <view class="hero-search-icon">⌕</view>
+        <text class="hero-search-text">搜索资讯 / 英烈 / 故事</text>
+      </view>
+      <view class="hero-menu" bindtap="onMenuTap">
+        <view class="hero-menu-icon">≡</view>
+      </view>
+    </view>
+
+    <view class="hero-inner">
+      <image class="hero-title-img" src="/images/hero-title.png" mode="widthFix" />
+    </view>
+
+    <!-- 公告滚动条：嵌在 hero 底部，白底圆角悬浮 -->
+    <view class="hero-notice" wx:if="{{notices.length}}" bindtap="goNews">
+      <view class="hero-notice-badge">公告</view>
+      <swiper class="hero-notice-swiper" vertical autoplay circular interval="3500" disable-touch>
+        <swiper-item wx:for="{{notices}}" wx:key="id">
+          <view class="hero-notice-text text-ellipsis">{{item.title}}</view>
+        </swiper-item>
+      </swiper>
+      <view class="hero-notice-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- 功能 8 宫格（2 行 4 列，彩色图标） -->
+  <view class="entry-card">
+    <view class="entry-grid">
+      <view class="entry-item" wx:for="{{entries}}" wx:key="name"
+        data-index="{{index}}" bindtap="onEntryTap">
+        <image class="entry-icon" src="{{item.icon}}" mode="aspectFit" />
+        <text class="entry-name">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 纪念馆简介：场馆概况文字 -->
+  <view class="intro-card">
+    <view class="intro-head">
+      <view class="intro-bar"></view>
+      <text class="intro-title">纪念馆简介</text>
+    </view>
+    <view class="intro-text">{{intro}}</view>
+  </view>
+
+  <!-- 荣誉资质：横向滚动徽章列表 -->
+  <view class="honor-card">
+    <view class="intro-head">
+      <view class="intro-bar"></view>
+      <text class="intro-title">荣誉资质</text>
+    </view>
+    <scroll-view scroll-x class="honor-scroll" enhanced show-scrollbar="{{false}}">
+      <view class="honor-list">
+        <view class="honor-item" wx:for="{{honors}}" wx:key="*this">
+          <view class="honor-badge">★</view>
+          <view class="honor-name">{{item}}</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 新闻资讯：分类筛选 + 图文列表 -->
+  <view class="news-card">
+    <view class="news-head">
+      <view class="news-block-title">
+        <view class="news-bar"></view>
+        <text>新闻资讯</text>
+      </view>
+      <text class="news-more" bindtap="goNews">更多 ›</text>
+    </view>
+
+    <!-- 分类 pills：数据来自资讯 category 聚合 -->
+    <scroll-view scroll-x class="news-tabs" enhanced show-scrollbar="{{false}}">
+      <view class="news-tabs-inner">
+        <view class="news-tab {{newsTab === item ? 'news-tab-active' : ''}}"
+          wx:for="{{newsTabs}}" wx:key="*this" data-tab="{{item}}" bindtap="onNewsTab">{{item}}</view>
+      </view>
+    </scroll-view>
+
+    <view wx:if="{{!showNews.length && !loading}}">
+      <empty text="暂无资讯" />
+    </view>
+    <view class="news-item" wx:for="{{showNews}}" wx:key="id" data-id="{{item.id}}" bindtap="onNewsTap">
+      <image class="news-cover" src="{{item.cover}}" mode="aspectFill" />
+      <view class="news-info">
+        <view class="news-title text-2lines">{{item.title}}</view>
+        <view class="news-meta">
+          <text class="tag tag-red">{{item.category}}</text>
+          <text class="news-date">{{item.dateText}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 公告弹窗 -->
+<view class="popup-mask" wx:if="{{popupNotice}}" bindtap="closePopup">
+  <view class="popup-box" catchtap="noop">
+    <view class="popup-head">
+      <view class="popup-badge {{popupNotice.type === '紧急通知' ? 'popup-badge-urgent' : ''}}">{{popupNotice.type}}</view>
+    </view>
+    <view class="popup-title">{{popupNotice.title}}</view>
+    <scroll-view scroll-y class="popup-content">
+      <text>{{popupNotice.content}}</text>
+    </scroll-view>
+    <view class="popup-btn btn btn-primary" bindtap="closePopup">我知道了</view>
+  </view>
+</view>
+
+<!-- 授权登录弹窗：未登录冷启动弹出 -->
+<authorize-popup show="{{showAuth}}" bind:login="onAuthLogin" bind:cancel="onAuthCancel" />

@@ -1,0 +1,21 @@
+<!-- 资讯详情 -->
+<view class="page" wx:if="{{news}}">
+  <view class="container">
+    <view class="card">
+      <view class="detail-title">{{news.title}}</view>
+      <view class="detail-meta">
+        <text class="tag tag-red">{{news.category}}</text>
+        <text class="meta-text">{{news.source}}</text>
+        <text class="meta-text">{{news.timeText}}</text>
+        <text class="meta-text">{{news.viewsText}} 浏览</text>
+      </view>
+      <image class="detail-cover" src="{{news.cover}}" mode="aspectFill" />
+      <!-- 导读摘要：仅当存在摘要时展示 -->
+      <view class="detail-summary" wx:if="{{news.summary}}">{{news.summary}}</view>
+      <view class="detail-content">{{news.content}}</view>
+    </view>
+  </view>
+</view>
+<view wx:elif="{{!loading}}">
+  <empty text="资讯不存在或已下架" />
+</view>

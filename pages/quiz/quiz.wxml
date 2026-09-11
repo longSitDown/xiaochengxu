@@ -1,0 +1,66 @@
+<!-- 知识竞赛：活动列表 -->
+<view class="page">
+  <view class="container">
+    <!-- 顶部操作区 -->
+    <view class="top-actions">
+      <view class="top-btn" bindtap="goHistory">
+        <view class="top-icon top-icon-history"></view>
+        <text>我的战绩</text>
+      </view>
+      <view class="top-btn" bindtap="goRanking">
+        <view class="top-icon top-icon-rank"></view>
+        <text>竞赛排行</text>
+      </view>
+    </view>
+
+    <view wx:if="{{!loading && !activities.length}}">
+      <empty text="暂无竞赛活动" sub="活动上线后将第一时间通知您" />
+    </view>
+
+    <!-- 活动卡片列表：遍历活动数据，记录活动 id 与状态，点击弹出规则弹窗 -->
+    <view class="act-card card" wx:for="{{activities}}" wx:key="id"
+      data-id="{{item.id}}" data-status="{{item.status}}" bindtap="onActivityTap">
+      <view class="act-head">
+        <view class="act-title flex-1 text-ellipsis">{{item.title}}</view>
+        <!-- 状态角标：按活动状态映射为 running/ready/ended 三种颜色 -->
+        <view class="act-status act-{{item.status === '进行中' ? 'running' : (item.status === '未开始' ? 'ready' : 'ended')}}">{{item.status}}</view>
+      </view>
+      <view class="act-desc text-2lines">{{item.description}}</view>
+      <!-- 元信息项：统计该活动的题目数量、限时分钟数与合格分 -->
+      <view class="act-meta">
+        <view class="meta-chip">
+          <text class="meta-num">{{item.questionCount}}</text>
+          <text class="meta-label">题目</text>
+        </view>
+        <view class="meta-chip">
+          <text class="meta-num">{{item.duration}}</text>
+          <text class="meta-label">分钟限时</text>
+        </view>
+        <view class="meta-chip">
+          <text class="meta-num">{{item.passScore}}</text>
+          <text class="meta-label">合格分</text>
+        </view>
+      </view>
+<!-- 底部信息：活动时间范围和入口按钮，进行中显示"开始答题"，已结束显示"查看排行" -->
+      <view class="act-foot">
+        <text class="act-time">{{item.timeRange}}</text>
+        <text class="act-entry">{{item.status === '进行中' ? '开始答题 ›' : '查看排行 ›'}}</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 活动规则弹窗：点击遮罩关闭，点击内容不冒泡，提供开始答题/暂不参与 -->
+<view class="rule-mask" wx:if="{{ruleActivity}}" bindtap="closeRule">
+  <view class="rule-box" catchtap="noop">
+    <view class="rule-title">{{ruleActivity.title}}</view>
+    <!-- 可滚动规则内容区：活动简介 + 答题规则 -->
+    <scroll-view scroll-y class="rule-content">
+      <view class="rule-desc">{{ruleActivity.description}}</view>
+      <view class="rule-block-title">答题规则</view>
+      <view class="rule-text">{{ruleActivity.rule}}</view>
+    </scroll-view>
+    <view class="rule-btn btn btn-primary btn-block" bindtap="startQuiz">开始答题</view>
+    <view class="rule-cancel" bindtap="closeRule">暂不参与</view>
+  </view>
+</view>

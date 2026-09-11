@@ -1,0 +1,82 @@
+/* 关于我们样式 */
+.about-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 72rpx 48rpx 56rpx;
+  background: linear-gradient(160deg, var(--red-bright) 0%, var(--primary) 55%, var(--red-deep) 100%);
+  color: #FFF;
+}
+.about-logo {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 36rpx;
+  border: 8rpx solid rgba(255, 255, 255, 0.35);
+  background: #FFF;
+}
+.about-name {
+  margin-top: 28rpx;
+  font-size: 40rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+}
+.about-desc {
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  line-height: 1.8;
+  opacity: 0.9;
+  text-align: center;
+}
+
+/* 区块标题 */
+.block-title {
+  display: flex;
+  align-items: center;
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+}
+.block-bar {
+  width: 8rpx;
+  height: 30rpx;
+  border-radius: 4rpx;
+  background: linear-gradient(180deg, var(--red-bright), var(--red-deep));
+  margin-right: 14rpx;
+}
+
+/* 服务宫格 */
+.svc-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 12rpx;
+}
+.svc-item {
+  width: 33.33%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 0;
+  font-size: 24rpx;
+  color: var(--text-sub);
+}
+.svc-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  margin-bottom: 12rpx;
+}
+/* 各服务项图标底色，与首页宫格配色对应 */
+.svc-hall { background: linear-gradient(135deg, var(--red-bright), var(--red-deep)); }
+.svc-resv { background: linear-gradient(135deg, #D8A75E, #B8860B); }
+.svc-quiz { background: linear-gradient(135deg, #E0604F, #C0392B); }
+.svc-guide { background: linear-gradient(135deg, #4A7BD0, #2C5FA8); }
+.svc-feedback { background: linear-gradient(135deg, #9B85C0, #6E56A8); }
+.svc-news { background: linear-gradient(135deg, #52A882, #2E8B57); }
+
+.about-copyright {
+  text-align: center;
+  margin-top: 48rpx;
+  font-size: 22rpx;
+  color: var(--text-light);
+  line-height: 1.9;
+}

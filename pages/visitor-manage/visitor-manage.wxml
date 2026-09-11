@@ -1,0 +1,52 @@
+<!-- 预约人管理：实名参观人列表 -->
+<view class="page">
+  <view class="container">
+    <!-- 未登录提示：需先登录才能维护预约人 -->
+    <view wx:if="{{!hasUser}}">
+      <empty text="请先登录" sub="登录后可添加预约人，预约时直接选取">
+      </empty>
+    </view>
+
+    <!-- 列表为空：展示空态及添加入口 -->
+    <view wx:elif="{{!loading && !list.length}}">
+      <empty text="暂无预约人" sub="提前添加参观人信息，预约时一键选取">
+        <view class="btn btn-primary btn-sm empty-btn" bindtap="onAdd">添加预约人</view>
+      </empty>
+    </view>
+
+    <!-- 预约人卡片：遍历实名参观人，展示姓名/脱敏身份证/手机号 -->
+    <block wx:else>
+      <view class="vm-tip">参观人进馆时须出示本人身份证原件核验，请确保信息真实</view>
+      <view class="card vm-card" wx:for="{{list}}" wx:key="id">
+        <view class="vm-head">
+          <view class="vm-name">{{item.name}}</view>
+          <!-- isDefault='1' 的为默认联系人 -->
+          <view class="vm-default" wx:if="{{item.isDefault === '1'}}">默认</view>
+        </view>
+        <view class="vm-line">
+          <text class="vm-label">身份证</text>
+          <text class="vm-value">{{item.idCardMask}}</text>
+        </view>
+        <view class="vm-line">
+          <text class="vm-label">手机号</text>
+          <text class="vm-value">{{item.phone}}</text>
+        </view>
+        <!-- 操作区：catchtap 阻止冒泡，避免与卡片点击冲突；data-id 定位要编辑/删除的记录 -->
+        <view class="vm-actions">
+          <view class="vm-act" data-id="{{item.id}}" catchtap="onEdit">编辑</view>
+          <view class="vm-act vm-act-danger" data-id="{{item.id}}" catchtap="onRemove">删除</view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 添加按钮（有数据时悬浮） -->
+  <view class="fab" wx:if="{{hasUser && list.length}}" bindtap="onAdd">
+    <view class="fab-plus">+</view>
+    <text>添加</text>
+  </view>
+
+  <!-- 新增/编辑弹层：复用通用组件 visitor-editor，editing 传入当前编辑项 -->
+  <visitor-editor show="{{showEditor}}" editing="{{editing}}" userId="{{userId}}"
+    bind:saved="onEditorSaved" bind:close="onEditorClose" />
+</view>

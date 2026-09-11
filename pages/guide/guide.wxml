@@ -1,0 +1,29 @@
+<!-- 场馆指南：分组手风琴 -->
+<view class="page container">
+  <!-- 空状态：加载完成且无任何分组数据时显示 -->
+  <view wx:if="{{!loading && !groups.length}}">
+    <empty text="指南整理中" />
+  </view>
+
+  <!-- 分类手风琴：点击分组头展开/收拢该分类下的条目（openIndex 标记当前展开分组） -->
+  <view class="card group-card" wx:for="{{groups}}" wx:key="category"
+    wx:for-index="gi" data-index="{{gi}}" bindtap="onGroupTap">
+    <!-- 分组头：图标 + 分类名 + 条目数 + 展开箭头 -->
+    <view class="group-head">
+      <view class="group-icon gi-{{item.icon}}">{{item.category[0]}}</view>
+      <view class="group-name flex-1">{{item.category}}</view>
+      <view class="group-count">{{item.items.length}} 条</view>
+      <view class="group-arrow {{openIndex === gi ? 'group-arrow-open' : ''}}">›</view>
+    </view>
+
+    <!-- 分组体：仅渲染当前展开分组的条目列表，点击条目可复制内容 -->
+    <view class="group-body" wx:if="{{openIndex === gi}}">
+      <view class="guide-item" wx:for="{{item.items}}" wx:for-item="g" wx:key="id"
+        data-content="{{g.content}}" bindtap="onItemTap">
+        <view class="guide-item-title">{{g.title}}</view>
+        <view class="guide-item-content">{{g.content}}</view>
+      </view>
+      <view class="copy-tip">点击条目可复制内容</view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,40 @@
+/* 区块标题组件样式 */
+
+/* 整体外边距：上下留白 */
+.st {
+  margin: 8rpx 0 20rpx;
+}
+/* 头部：标题与"更多"两端对齐 */
+.st-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+.st-title {
+  display: flex;
+  align-items: center;
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #2b2b2b;
+}
+
+/* 标题左侧的红色渐变竖条装饰 */
+.st-bar {
+  width: 8rpx;
+  height: 32rpx;
+  border-radius: 4rpx;
+  background: linear-gradient(180deg, #d92543, #a80f28);
+  margin-right: 14rpx;
+}
+/* 右侧"更多"入口与箭头 */
+.st-more {
+  font-size: 26rpx;
+  color: #7a7a7a;
+  display: flex;
+  align-items: center;
+}
+.st-arrow {
+  margin-left: 4rpx;
+  font-size: 30rpx;
+}

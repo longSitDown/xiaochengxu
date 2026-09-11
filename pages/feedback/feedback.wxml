@@ -1,0 +1,76 @@
+<!-- 意见反馈：提交 / 我的反馈 -->
+<view class="page">
+  <!-- Tab 切换 -->
+  <view class="fb-tabs">
+    <view class="fb-tab {{tab === 'create' ? 'fb-tab-active' : ''}}" data-tab="create" bindtap="onTabTap">提交反馈</view>
+    <view class="fb-tab {{tab === 'mine' ? 'fb-tab-active' : ''}}" data-tab="mine" bindtap="onTabTap">我的反馈</view>
+  </view>
+
+  <!-- 提交反馈 -->
+  <view class="container" wx:if="{{tab === 'create'}}">
+    <view class="card">
+      <!-- 反馈内容多行输入（必填，限 500 字） -->
+      <view class="fb-label">反馈内容 <text class="fb-required">*</text></view>
+      <view class="textarea-box">
+        <textarea placeholder="请描述您遇到的问题或宝贵建议（至少 5 个字）"
+          value="{{content}}" bindinput="onContentInput" maxlength="500" />
+      </view>
+      <!-- 已输入字数统计 -->
+      <view class="fb-count">{{content.length}} / 500</view>
+
+      <view class="fb-label mt24">上传图片（最多 3 张）</view>
+      <!-- 已选图片列表（可预览 / 删除）+ 添加按钮（未满 3 张时显示） -->
+      <view class="upload-list">
+        <view class="upload-item" wx:for="{{images}}" wx:key="*this">
+          <image src="{{item}}" mode="aspectFill" data-src="{{item}}" bindtap="onPreviewImage" />
+          <view class="upload-del" data-index="{{index}}" catchtap="onRemoveImage">×</view>
+        </view>
+        <view class="upload-add" wx:if="{{images.length < 3}}" bindtap="onChooseImage">
+          <view class="plus">+</view>
+          <text>添加图片</text>
+        </view>
+      </view>
+
+      <view class="fb-label mt24">联系方式</view>
+      <!-- 联系方式输入（选填） -->
+      <view class="fb-contact">
+        <input placeholder="手机号 / 微信号（选填，便于回复您）"
+          value="{{contact}}" bindinput="onContactInput" maxlength="30" />
+      </view>
+    </view>
+
+    <view class="btn btn-primary btn-block {{submitting ? 'btn-loading' : ''}}" bindtap="onSubmit">提交反馈</view>
+    <!-- 提交后引导提示 -->
+    <view class="fb-tip">提交后可在「我的反馈」中查看处理进度与官方回复</view>
+  </view>
+
+  <!-- 我的反馈 -->
+  <view class="container" wx:if="{{tab === 'mine'}}">
+    <!-- 空状态：加载完成且无反馈记录 -->
+    <view wx:if="{{!mineLoading && !myList.length}}">
+      <empty text="暂无反馈记录" sub="有任何意见建议欢迎告诉我们" />
+    </view>
+
+    <!-- 反馈列表项卡片：点击进入详情页 -->
+    <view class="card fb-card" wx:for="{{myList}}" wx:key="id"
+      data-id="{{item.id}}" bindtap="onItemTap">
+      <!-- 卡片头部：状态 + 提交时间 -->
+      <view class="fb-card-head">
+        <view class="fb-status {{item.statusClass}}">{{item.status}}</view>
+        <view class="fb-time">{{item.timeText}}</view>
+      </view>
+      <!-- 内容简介（限 2 行截断） -->
+      <view class="fb-content text-2lines">{{item.content}}</view>
+      <!-- 反馈图片缩略图 -->
+      <view class="fb-thumbs" wx:if="{{item.images.length}}">
+        <image wx:for="{{item.images}}" wx:for-item="img" wx:key="*this" class="fb-thumb"
+          src="{{img}}" mode="aspectFill" />
+      </view>
+      <view class="fb-reply" wx:if="{{item.reply}}">
+        <text class="fb-reply-label">官方回复</text>
+        <text class="text-ellipsis">{{item.reply}}</text>
+      </view>
+      <view class="fb-arrow">查看详情 ›</view>
+    </view>
+  </view>
+</view>

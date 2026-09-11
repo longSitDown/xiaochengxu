@@ -1,0 +1,193 @@
+/* 预约详情样式 */
+/* 顶部状态头：红色渐变背景，内容垂直居中对齐 */
+.status-hero {
+  padding: 48rpx 40rpx 40rpx;
+  background: linear-gradient(160deg, var(--red-bright) 0%, var(--primary) 55%, var(--red-deep) 100%);
+  color: #FFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.status-name {
+  font-size: 44rpx;
+  font-weight: 700;
+}
+.status-desc {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  opacity: 0.9;
+}
+.status-date {
+  margin-top: 20rpx;
+  padding: 10rpx 32rpx;
+  border-radius: 32rpx;
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+/* 进度：steps 横排，底部 progress-line 绝对定位作为连接进度线 */
+.progress-steps {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding: 10rpx 40rpx 0;
+}
+.progress-line {
+  position: absolute;
+  top: 24rpx;
+  left: 88rpx;
+  height: 4rpx;
+  background: linear-gradient(90deg, var(--red-bright), var(--red-deep));
+  transition: width 0.4s;
+}
+.step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 140rpx;
+}
+/* 步骤圆点：默认灰色圆环，step-done 点亮为红色 */
+.step-dot {
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 50%;
+  background: #E3E0DB;
+  border: 6rpx solid #FFF;
+  box-shadow: 0 0 0 2rpx #E3E0DB;
+}
+.step-done .step-dot {
+  background: var(--primary);
+  box-shadow: 0 0 0 2rpx var(--primary);
+}
+.step-label {
+  margin-top: 12rpx;
+  font-size: 22rpx;
+  color: var(--text-sub);
+}
+.step-done .step-label {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* 驳回原因：左侧红色竖条标识警示 */
+.reject-card {
+  border-left: 8rpx solid var(--danger);
+}
+.reject-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--danger);
+  margin-bottom: 10rpx;
+}
+.reject-text {
+  font-size: 26rpx;
+  color: var(--text-sub);
+  line-height: 1.8;
+}
+
+/* 核销码：二维码卡片整体居中展示 */
+.qr-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 36rpx 24rpx;
+}
+.qr-title {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+.qr-box {
+  margin-top: 24rpx;
+  padding: 20rpx;
+  border: 2rpx solid var(--line);
+  border-radius: 16rpx;
+  background: #FFF;
+}
+.qr-canvas {
+  display: block;
+}
+.qr-code {
+  margin-top: 18rpx;
+  max-width: 100%;
+  font-size: 22rpx;
+  color: var(--text-light);
+  font-family: monospace;
+}
+.qr-tip {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+}
+.qr-pending {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 24rpx;
+  color: var(--text-light);
+  font-size: 26rpx;
+}
+/* 待审核占位图标：虚线圆环表示核销码尚未生成 */
+.qr-pending-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  border: 4rpx dashed #D8D4CE;
+  margin-bottom: 16rpx;
+}
+
+/* 区块标题 */
+.block-title {
+  display: flex;
+  align-items: center;
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+.block-bar {
+  width: 8rpx;
+  height: 30rpx;
+  border-radius: 4rpx;
+  background: linear-gradient(180deg, var(--red-bright), var(--red-deep));
+  margin-right: 14rpx;
+}
+
+.detail-actions {
+  margin-top: 12rpx;
+}
+
+/* 参观人实名名单 */
+.rd-visitor-head {
+  align-items: center;
+}
+.rd-visitor-tag {
+  margin-left: auto;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 20rpx;
+}
+/* 实名参观人名单行：姓名靠左、脱敏证件号靠右，末项去掉分隔线 */
+.rd-visitor {
+  display: flex;
+  align-items: center;
+  padding: 14rpx 0;
+  border-bottom: 2rpx solid var(--line);
+}
+.rd-visitor:last-of-type {
+  border-bottom: none;
+}
+.rd-visitor-name {
+  font-size: 28rpx;
+  color: var(--text-main);
+  min-width: 140rpx;
+}
+.rd-visitor-idcard {
+  margin-left: auto;
+  font-size: 24rpx;
+  color: var(--text-sub);
+  font-family: monospace;
+}

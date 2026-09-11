@@ -1,0 +1,40 @@
+<!-- 预约人新增/编辑弹层 -->
+<view class="ve-mask" wx:if="{{show}}" bindtap="onClose">
+  <!-- 弹层卡片：点击卡片内部不关闭（catchtap 阻止冒泡） -->
+  <view class="ve-box" catchtap="noop">
+    <!-- 标题：根据编辑/新增状态切换文案 -->
+    <view class="ve-title">{{editing ? '编辑预约人' : '添加预约人'}}</view>
+
+    <!-- 表单：姓名 / 身份证号 / 手机号 / 默认开关 -->
+    <view class="ve-form">
+      <view class="ve-cell">
+        <view class="ve-label">姓名</view>
+        <input class="ve-input" placeholder="与身份证一致的真实姓名" value="{{name}}" bindinput="onNameInput" maxlength="20" />
+      </view>
+      <view class="ve-cell">
+        <view class="ve-label">身份证号</view>
+        <input class="ve-input" placeholder="18 位身份证号码" value="{{idCard}}" bindinput="onIdCardInput" maxlength="18" />
+      </view>
+      <view class="ve-cell">
+        <view class="ve-label">手机号</view>
+        <input class="ve-input" type="number" maxlength="11" placeholder="联系方式" value="{{phone}}" bindinput="onPhoneInput" />
+      </view>
+      <!-- 设为默认预约人的自定义开关 -->
+      <view class="ve-cell ve-switch" bindtap="onDefaultTap">
+        <view class="ve-label">设为默认预约人</view>
+        <view class="ve-toggle {{isDefault ? 've-toggle-on' : ''}}">
+          <view class="ve-toggle-dot"></view>
+        </view>
+      </view>
+    </view>
+
+    <view class="ve-tip">参观人进馆时需出示本人身份证原件核验，请确保信息真实有效</view>
+
+    <!-- 保存按钮（提交中显示加载态） -->
+    <view class="btn btn-primary btn-block {{saving ? 'btn-loading' : ''}}" bindtap="onSave">
+      {{saving ? '保存中…' : '保存'}}
+    </view>
+    <!-- 取消并关闭弹层 -->
+    <view class="ve-cancel" bindtap="onClose">取消</view>
+  </view>
+</view>

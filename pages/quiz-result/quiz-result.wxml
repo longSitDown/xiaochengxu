@@ -1,0 +1,73 @@
+<!-- 答题结果：成绩总览 + 错题解析 -->
+<view class="page" wx:if="{{record}}">
+  <!-- 成绩卡：按是否合格切换红色（合格）或灰色（未通过）背景 -->
+  <view class="score-hero {{passed ? 'score-pass' : 'score-fail'}}">
+    <view class="score-circle">
+      <view class="score-num">{{record.score}}</view>
+      <view class="score-unit">分</view>
+    </view>
+    <!-- 及格判断文案 -->
+    <view class="score-verdict">{{passed ? '恭喜达成合格线' : '再接再厉，继续加油'}}</view>
+    <!-- 成绩统计：答对题数 / 答题用时 / 错题数量 -->
+    <view class="score-stats">
+      <view class="st-item">
+        <view class="st-num">{{record.correctCount}}/{{record.totalCount}}</view>
+        <view class="st-label">答对题数</view>
+      </view>
+      <view class="st-item">
+        <view class="st-num">{{durationText}}</view>
+        <view class="st-label">答题用时</view>
+      </view>
+      <view class="st-item">
+        <view class="st-num">{{wrongList.length}}</view>
+        <view class="st-label">错题数量</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="container">
+    <!-- 活动与提交信息卡片 -->
+    <view class="card">
+      <view class="cell flex-between">
+        <text class="text-sub">活动名称</text>
+        <text>{{record.activityTitle}}</text>
+      </view>
+      <view class="cell flex-between">
+        <text class="text-sub">提交时间</text>
+        <text>{{timeText}}</text>
+      </view>
+    </view>
+
+    <!-- 错题解析列表：逐条展示题型、我的答案、正确答案与解析 -->
+    <view class="card" wx:if="{{wrongList.length}}">
+      <view class="block-title">
+        <view class="block-bar"></view>
+        <text>错题解析（{{wrongList.length}}）</text>
+      </view>
+      <view class="wrong-item" wx:for="{{wrongList}}" wx:key="index">
+        <view class="wrong-head">
+          <text class="tag tag-orange">{{item.type}}</text>
+          <text class="wrong-title flex-1">{{item.title}}</text>
+        </view>
+        <view class="wrong-ans wrong-my">我的答案：{{item.myAnswer}}</view>
+        <view class="wrong-ans wrong-right">正确答案：{{item.answer}}</view>
+        <!-- 有解析文案时才展示解析行 -->
+        <view class="wrong-analysis" wx:if="{{item.analysis}}">
+          <text class="wrong-analysis-label">解析</text>{{item.analysis}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 全部答对的激励提示 -->
+    <view class="card" wx:if="{{!wrongList.length}}">
+      <empty text="全部答对，太棒了！" sub="红色知识掌握得很扎实" />
+    </view>
+
+    <!-- 操作按钮：再答一次 / 查看排行榜 / 返回活动列表 -->
+    <view class="result-actions">
+      <view class="btn btn-primary btn-block" bindtap="retry">再答一次</view>
+      <view class="btn btn-plain btn-block mt24" bindtap="goRanking">查看排行榜</view>
+      <view class="btn btn-ghost btn-block mt24" bindtap="goHome">返回活动列表</view>
+    </view>
+  </view>
+</view>

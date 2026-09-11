@@ -1,0 +1,112 @@
+<!-- 预约详情：状态 + 进度 + 核销码 + 信息 + 操作 -->
+<view class="page" wx:if="{{resv}}">
+  <!-- 状态头：顶部红色渐变背景，展示状态文字及对应提示文案，下方预约日期时段 -->
+  <view class="status-hero">
+    <view class="status-name {{statusClass}}">{{resv.status}}</view>
+    <!-- 根据状态动态渲染不同文案 -->
+    <view class="status-desc">{{resv.status === '待审核' ? '工作人员将在 1 个工作日内完成审核' :
+      (resv.status === '已通过' ? '凭身份证原件 + 核销码入馆参观' :
+      (resv.status === '已核销' ? '本次参观已完成，感谢您的到来' :
+      (resv.status === '已驳回' ? '预约未通过审核' : '预约已取消')))}}</view>
+    <view class="status-date">{{resv.visitDate}} {{resv.timeSlot}}</view>
+  </view>
+
+  <view class="container">
+    <!-- 审核进度（仅正常流程状态显示）：steps 为步骤数组，idx 下标决定点亮到哪一步 -->
+    <view class="card" wx:if="{{resv.status === '待审核' || resv.status === '已通过' || resv.status === '已核销'}}">
+      <view class="progress-steps">
+        <view class="step {{currentStep >= idx ? 'step-done' : ''}}" wx:for="{{steps}}" wx:for-index="idx" wx:key="*this">
+          <view class="step-dot"></view>
+          <view class="step-label">{{item}}</view>
+        </view>
+      </view>
+      <!-- 底部进度条宽度按 currentStep/2 折算百分比 -->
+      <view class="progress-line" style="width: {{currentStep / 2 * 100}}%"></view>
+    </view>
+
+    <!-- 驳回原因 -->
+    <view class="card reject-card" wx:if="{{resv.status === '已驳回' && resv.rejectReason}}">
+      <view class="reject-title">驳回原因</view>
+      <view class="reject-text">{{resv.rejectReason}}</view>
+    </view>
+
+    <!-- 核销二维码：审核通过后的入馆核销码，canvas 承载二维码，下方展示二维码文本 -->
+    <view class="card qr-card" wx:if="{{showQr}}">
+      <view class="qr-title">入馆核销码</view>
+      <view class="qr-box">
+        <canvas canvas-id="qrCanvas" class="qr-canvas" style="width:180px;height:180px"></canvas>
+      </view>
+      <view class="qr-code text-ellipsis">{{resv.qrCode}}</view>
+      <view class="qr-tip">入馆时请出示参观人本人身份证原件，配合工作人员扫码核销</view>
+    </view>
+    <!-- 待审核占用位：提示审核通过后才出核销码 -->
+    <view class="card qr-pending" wx:if="{{resv.status === '待审核'}}">
+      <view class="qr-pending-icon"></view>
+      <view>审核通过后将生成专属入馆核销码</view>
+    </view>
+
+    <!-- 预约信息：只读展示预约详情（日期/人数/实名名单/联系人等） -->
+    <view class="card form-card">
+      <view class="block-title">
+        <view class="block-bar"></view>
+        <text>预约信息</text>
+      </view>
+      <view class="cell">
+        <view class="cell-label">预约类型</view>
+        <view class="cell-value">{{resv.type}}预约</view>
+      </view>
+      <view class="cell">
+        <view class="cell-label">参观日期</view>
+        <view class="cell-value">{{resv.visitDate}}</view>
+      </view>
+      <view class="cell">
+        <view class="cell-label">参观时段</view>
+        <view class="cell-value">{{resv.timeSlot}}</view>
+      </view>
+      <view class="cell">
+        <view class="cell-label">参观人数</view>
+        <view class="cell-value">{{resv.visitorCount}} 人</view>
+      </view>
+      <!-- 参观人实名名单（进馆凭身份证核验）：idCardMask 为脱敏身份证号 -->
+      <view class="cell rd-visitor-head" wx:if="{{resv.visitorList.length}}">
+        <view class="cell-label">参观人</view>
+        <view class="rd-visitor-tag">{{resv.visitorList.length}} 人已实名</view>
+      </view>
+      <view class="rd-visitor" wx:for="{{resv.visitorList}}" wx:key="idCard">
+        <view class="rd-visitor-name">{{item.name}}</view>
+        <view class="rd-visitor-idcard">{{item.idCardMask}}</view>
+      </view>
+      <view class="cell" wx:if="{{resv.organization}}">
+        <view class="cell-label">团体名称</view>
+        <view class="cell-value">{{resv.organization}}</view>
+      </view>
+      <view class="cell">
+        <view class="cell-label">联系人</view>
+        <view class="cell-value">{{resv.contactName}}</view>
+      </view>
+      <view class="cell">
+        <view class="cell-label">联系电话</view>
+        <view class="cell-value">{{resv.contactPhone}}</view>
+      </view>
+      <view class="cell" wx:if="{{resv.contactIdCardMask}}">
+        <view class="cell-label">身份证号</view>
+        <view class="cell-value">{{resv.contactIdCardMask}}</view>
+      </view>
+      <view class="cell" wx:if="{{resv.remark}}">
+        <view class="cell-label">备注</view>
+        <view class="cell-value">{{resv.remark}}</view>
+      </view>
+      <view class="cell">
+        <view class="cell-label">提交时间</view>
+        <view class="cell-value">{{timeText}}</view>
+      </view>
+    </view>
+
+    <!-- 操作按钮：待审核/已通过可改期、可取消；其余状态仅提供返回 -->
+    <view class="detail-actions" wx:if="{{resv.status === '待审核' || resv.status === '已通过'}}">
+      <view class="btn btn-plain btn-block" bindtap="onReschedule">改 期</view>
+      <view class="btn btn-ghost btn-block mt24" bindtap="onCancel">取消预约</view>
+    </view>
+    <view class="btn btn-ghost btn-block mt24" wx:else bindtap="goList">返 回</view>
+  </view>
+</view>

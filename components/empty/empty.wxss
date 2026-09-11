@@ -1,0 +1,38 @@
+/* 空状态组件样式 */
+
+/* 纵向居中排列 */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100rpx 40rpx;
+}
+
+/* 图标圆形灰底容器 */
+.empty-icon {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 50%;
+  background: #f0efec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 用 clip-path 裁剪出的灰色五角星 */
+.empty-star {
+  width: 44rpx;
+  height: 44rpx;
+  background: #d8d4ce;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+.empty-text {
+  margin-top: 24rpx;
+  font-size: 28rpx;
+  color: #7a7a7a;
+}
+.empty-sub {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #b0b0b0;
+}

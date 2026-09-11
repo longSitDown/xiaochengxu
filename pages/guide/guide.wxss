@@ -1,0 +1,84 @@
+/* 场馆指南样式 */
+
+/* 分组卡：去除卡片默认内边距，展开区由内部控制 */
+.group-card {
+  padding: 0 24rpx;
+}
+
+/* 分组头：图标 + 名称 + 计数 + 箭头横排 */
+.group-head {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 0;
+}
+
+/* 分组图标：圆角方块头，文字取分类首字 */
+.group-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFF;
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+/* 分组图标底色：按分类类型（时钟/地点/公告/服务/导览）取不同渐变 */
+.gi-clock { background: linear-gradient(135deg, var(--red-bright), var(--red-deep)); }
+.gi-location { background: linear-gradient(135deg, #4A7BD0, #2C5FA8); }
+.gi-notice { background: linear-gradient(135deg, #E08A00, #B36B00); }
+.gi-service { background: linear-gradient(135deg, #52A882, #2E8B57); }
+.gi-guide { background: linear-gradient(135deg, #9B85C0, #6E56A8); }
+
+.group-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* 分组条目计数 + 展开箭头 */
+.group-count {
+  font-size: 22rpx;
+  color: var(--text-light);
+  margin-right: 12rpx;
+}
+
+/* 尾部展开箭头：默认朝向，展开时旋转 90° 变竖向前方 */
+.group-arrow {
+  font-size: 34rpx;
+  color: var(--text-light);
+  transition: transform 0.25s;
+}
+.group-arrow-open {
+  transform: rotate(90deg);
+}
+
+.group-body {
+  padding-bottom: 20rpx;
+}
+
+/* 列表条目：缩进对齐图标，点击可复制 */
+.guide-item {
+  padding: 18rpx 0 18rpx 92rpx;
+  border-top: 1rpx solid var(--line);
+}
+.guide-item-title {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--text-main);
+}
+.guide-item-content {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+  line-height: 1.8;
+}
+.copy-tip {
+  padding: 14rpx 0 4rpx 92rpx;
+  font-size: 20rpx;
+  color: var(--text-light);
+}

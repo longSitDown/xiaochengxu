@@ -1,0 +1,13 @@
+<!-- 空状态组件 -->
+<view class="empty">
+  <!-- 五角星占位图标 -->
+  <view class="empty-icon">
+    <view class="empty-star"></view>
+  </view>
+  <!-- 主提示文案（默认"暂无数据"） -->
+  <view class="empty-text">{{text || '暂无数据'}}</view>
+  <!-- 次级说明文案（可选） -->
+  <view wx:if="{{sub}}" class="empty-sub">{{sub}}</view>
+  <!-- 插槽：可放置空状态下的操作按钮等自定义内容 -->
+  <slot></slot>
+</view>

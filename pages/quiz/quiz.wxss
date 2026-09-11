@@ -1,0 +1,195 @@
+/* 知识竞赛样式 */
+/* 顶部操作区：我的战绩 / 竞赛排行两个入口按钮 */
+.top-actions {
+  display: flex;
+  margin-bottom: 24rpx;
+}
+.top-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  color: var(--text-main);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+/* 两个按钮之间的间距（首个按钮右侧留白） */
+.top-btn:first-child {
+  margin-right: 20rpx;
+}
+.top-icon {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 12rpx;
+  position: relative;
+}
+/* 战绩图标：旗帜 */
+.top-icon-history::before {
+  content: "";
+  position: absolute;
+  left: 6rpx;
+  top: 0;
+  bottom: 0;
+  width: 6rpx;
+  background: var(--primary);
+  border-radius: 3rpx;
+}
+.top-icon-history::after {
+  content: "";
+  position: absolute;
+  left: 12rpx;
+  top: 2rpx;
+  width: 24rpx;
+  height: 20rpx;
+  background: linear-gradient(135deg, var(--red-bright), var(--red-deep));
+  border-radius: 0 6rpx 6rpx 0;
+}
+/* 排行图标：柱状图 */
+.top-icon-rank {
+  display: flex;
+  align-items: flex-end;
+}
+.top-icon-rank::before,
+.top-icon-rank::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 10rpx;
+  border-radius: 4rpx;
+  background: var(--gold);
+}
+.top-icon-rank::before {
+  left: 2rpx;
+  height: 36rpx;
+}
+.top-icon-rank::after {
+  right: 2rpx;
+  height: 24rpx;
+}
+
+/* 活动卡片 */
+.act-head {
+  display: flex;
+  align-items: center;
+}
+.act-title {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+.act-status {
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}
+/* 活动状态配色：进行中（绿）/ 未开始（黄）/ 已结束（灰） */
+.act-running {
+  background: #E4F4EA;
+  color: var(--success);
+}
+.act-ready {
+  background: #FCF0DF;
+  color: var(--warning);
+}
+.act-ended {
+  background: #F0EFEC;
+  color: var(--text-sub);
+}
+.act-desc {
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+  line-height: 1.7;
+}
+/* 活动元信息底条：题目数/限时/合格分三个均分项 */
+.act-meta {
+  display: flex;
+  margin-top: 22rpx;
+  background: #FAF9F7;
+  border-radius: 12rpx;
+  padding: 18rpx 0;
+}
+.meta-chip {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.meta-num {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--primary);
+}
+.meta-label {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: var(--text-sub);
+}
+.act-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20rpx;
+}
+.act-time {
+  font-size: 22rpx;
+  color: var(--text-light);
+}
+.act-entry {
+  font-size: 26rpx;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* 规则弹窗：半透明遮罩浮层居中显示 */
+.rule-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rule-box {
+  width: 620rpx;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 40rpx 32rpx 28rpx;
+}
+.rule-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  text-align: center;
+}
+.rule-content {
+  max-height: 460rpx;
+  margin: 24rpx 0;
+}
+.rule-desc {
+  font-size: 26rpx;
+  color: var(--text-sub);
+  line-height: 1.8;
+}
+.rule-block-title {
+  margin: 20rpx 0 10rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--primary);
+}
+.rule-text {
+  font-size: 26rpx;
+  color: var(--text-main);
+  line-height: 1.9;
+  white-space: pre-line;
+}
+.rule-cancel {
+  margin-top: 20rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--text-light);
+}

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "展品详情",
+  "usingComponents": {
+    "audio-player": "/components/audio-player/audio-player"
+  }
+}

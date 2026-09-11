@@ -1,0 +1,51 @@
+<!-- 数字导览（tabBar）：720°全景入口 + 展区横幅卡片（参照 UI 设计稿） -->
+<view class="page">
+  <!-- 720°全景大图入口：全宽横幅 + 底部白字浮层 -->
+  <view class="pano-entry" bindtap="goPanorama">
+    <image class="pano-bg" src="/images/panorama.png" mode="aspectFill" />
+    <view class="pano-mask"></view>
+    <view class="pano-body">
+      <view class="pano-label">720° 全景数字展馆</view>
+      <view class="pano-desc">足不出户 · 线上漫游展厅</view>
+      <view class="pano-btn">进入全景</view>
+    </view>
+  </view>
+
+  <view class="container">
+    <!-- 展区标题 -->
+    <view class="hall-head">
+      <view class="hall-bar"></view>
+      <text class="hall-title">展厅导览</text>
+      <text class="hall-count" wx:if="{{exhibitions.length}}">{{exhibitions.length}} 个展区</text>
+    </view>
+
+    <!-- 无展区数据时的空态占位 -->
+    <view wx:if="{{!loading && !exhibitions.length}}">
+      <empty text="展区建设中" sub="敬请期待" />
+    </view>
+
+    <!-- 展区横幅卡片：大图 + 底部渐变白字（点击进入展区详情） -->
+    <view class="hall-list">
+      <view class="hall-card" wx:for="{{exhibitions}}" wx:key="id"
+        data-id="{{item.id}}" bindtap="goHallDetail">
+        <image class="hall-cover" src="{{item.cover}}" mode="aspectFill" />
+        <view class="hall-gradient"></view>
+        <view class="hall-info">
+          <view class="hall-seq">{{item.seq}}</view>
+          <view class="hall-name">{{item.main}}</view>
+          <view class="hall-meta">{{item.artifactCount}} 件展品 · 点击进入</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 红色知识竞赛入口（原 tab 功能保留入口） -->
+    <view class="quiz-entry" bindtap="goQuiz">
+      <view class="quiz-entry-icon">★</view>
+      <view class="flex-1">
+        <view class="quiz-entry-title">红色知识竞赛</view>
+        <view class="quiz-entry-desc">重温红色岁月 · 检验学习成果</view>
+      </view>
+      <view class="quiz-entry-arrow">›</view>
+    </view>
+  </view>
+</view>

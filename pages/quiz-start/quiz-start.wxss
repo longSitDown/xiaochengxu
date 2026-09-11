@@ -1,0 +1,157 @@
+/* 答题页样式 */
+.qs-page {
+  min-height: 100vh;
+  padding-bottom: 60rpx;
+}
+
+/* 顶部状态：进度文本 + 倒计时文本并排 */
+.qs-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 32rpx;
+  background: #FFFFFF;
+}
+.qs-progress {
+  font-size: 28rpx;
+  color: var(--text-main);
+  font-weight: 600;
+}
+.qs-timer {
+  font-size: 26rpx;
+  color: var(--primary);
+  font-weight: 600;
+  font-family: monospace;
+}
+/* 进度条底座 */
+.qs-bar {
+  height: 6rpx;
+  background: #F0EFEC;
+}
+/* 进度条填充：红色渐变随进度线性增长 */
+.qs-bar-inner {
+  height: 100%;
+  background: linear-gradient(90deg, var(--red-bright), var(--red-deep));
+  transition: width 0.3s;
+}
+
+/* 题目卡片 */
+.q-card {
+  margin-top: 24rpx;
+}
+.q-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+.q-type {
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+}
+/* 题型标签配色：单选（红）/ 多选（蓝）/ 判断（金） */
+.q-type-single { background: var(--primary-light); color: var(--primary); }
+.q-type-multi { background: #E8F0FC; color: var(--info); }
+.q-type-judge { background: var(--gold-light); color: var(--gold-text); }
+.q-score {
+  font-size: 22rpx;
+  color: var(--text-light);
+}
+.q-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--text-main);
+}
+.q-hint {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  color: var(--info);
+}
+
+/* 选项行：圆形容器 + 文本，选中态高亮边框与底色 */
+.opt {
+  display: flex;
+  align-items: center;
+  padding: 26rpx 24rpx;
+  margin-top: 20rpx;
+  border: 2rpx solid var(--line);
+  border-radius: 14rpx;
+  background: #FAF9F7;
+}
+/* 选项选中态 */
+.opt-selected {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+.opt-check {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  border: 2rpx solid #D8D4CE;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 20rpx;
+}
+/* 圆形勾选框选中态：填充主色 */
+.opt-check-on {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+/* 勾选对勾：用边框旋转 45 度绘制 */
+.opt-tick {
+  width: 14rpx;
+  height: 22rpx;
+  border-right: 4rpx solid #FFF;
+  border-bottom: 4rpx solid #FFF;
+  transform: rotate(45deg);
+  margin-top: -6rpx;
+}
+.opt-text {
+  flex: 1;
+  font-size: 28rpx;
+  line-height: 1.5;
+  color: var(--text-main);
+}
+
+/* 底部操作：上一题（描边）与下一题/交卷（主色填充）并排按钮 */
+.qs-actions {
+  display: flex;
+  margin-top: 32rpx;
+}
+.qs-btn {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+}
+/* 主操作按钮：红色渐变填充 */
+.qs-btn-primary {
+  background: linear-gradient(135deg, var(--red-bright) 0%, var(--primary) 60%, var(--red-deep) 100%);
+  color: #FFF;
+  font-weight: 500;
+}
+/* 次操作按钮：白色描边 */
+.qs-btn-plain {
+  background: #FFFFFF;
+  border: 2rpx solid var(--line);
+  color: var(--text-sub);
+  margin-right: 24rpx;
+}
+/* 首题禁用态：降低透明度 */
+.qs-btn-disabled {
+  opacity: 0.4;
+}
+.qs-count {
+  text-align: center;
+  margin-top: 24rpx;
+  font-size: 24rpx;
+  color: var(--text-light);
+}

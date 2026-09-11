@@ -1,0 +1,119 @@
+/* 全局语音播放条样式 */
+
+/* 播放条：固定于底部安全区内，白色半透明浮层 */
+.ap-bar {
+  position: fixed;
+  left: 24rpx;
+  right: 24rpx;
+  bottom: calc(env(safe-area-inset-bottom) + 24rpx);
+  height: 132rpx;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.18);
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  padding: 0 20rpx;
+  z-index: 999;
+}
+
+/* 封面缩略图容器 */
+.ap-cover {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+  background: #f0efec;
+}
+.ap-cover-img {
+  width: 100%;
+  height: 100%;
+}
+
+/* 播放中的封面遮罩：红色半透明，提示当前正在播放 */
+.ap-cover-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(200, 16, 46, 0.28);
+}
+
+/* 中部信息区：标题 + 进度条 + 时间 */
+.ap-info {
+  flex: 1;
+  min-width: 0;
+  margin: 0 12rpx;
+}
+.ap-title {
+  font-size: 26rpx;
+  color: #2b2b2b;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 负外边距压缩 slider 上下占位，让布局更紧凑 */
+.ap-progress {
+  margin: -6rpx 0 -18rpx;
+}
+.ap-slider {
+  margin: 0;
+}
+
+/* 已播 / 总时长，两端对齐 */
+.ap-time {
+  display: flex;
+  justify-content: space-between;
+  font-size: 20rpx;
+  color: #b0b0b0;
+}
+
+/* 圆形播放/暂停按钮：红色渐变底 */
+.ap-btn {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d92543, #a80f28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* 播放图标：用纯 CSS 三角形表示 */
+.ap-play-icon {
+  width: 0;
+  height: 0;
+  border-top: 16rpx solid transparent;
+  border-bottom: 16rpx solid transparent;
+  border-left: 26rpx solid #fff;
+  margin-left: 6rpx;
+}
+
+/* 暂停图标：用两个白色竖条表示 */
+.ap-pause-icon {
+  width: 26rpx;
+  height: 30rpx;
+  display: flex;
+  justify-content: space-between;
+}
+.ap-pause-icon::before,
+.ap-pause-icon::after {
+  content: "";
+  width: 9rpx;
+  height: 30rpx;
+  background: #fff;
+  border-radius: 2rpx;
+}
+
+/* 关闭按钮 */
+.ap-close {
+  width: 44rpx;
+  height: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b0b0b0;
+  font-size: 40rpx;
+  flex-shrink: 0;
+}

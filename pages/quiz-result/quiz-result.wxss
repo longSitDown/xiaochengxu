@@ -1,0 +1,133 @@
+/* 答题结果样式 */
+/* 成绩头区块：得分圆环 + 合格判断 + 三列统计 */
+.score-hero {
+  padding: 60rpx 40rpx 50rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #FFFFFF;
+}
+/* 合格背景：红色渐变条 */
+.score-pass {
+  background: linear-gradient(160deg, var(--red-bright) 0%, var(--red-deep) 70%, #6E0817 100%);
+}
+/* 未通过背景：灰蓝色渐变条 */
+.score-fail {
+  background: linear-gradient(160deg, #55606E 0%, #2B333D 100%);
+}
+/* 圆环：半透明边框围住得分数字 */
+.score-circle {
+  width: 220rpx;
+  height: 220rpx;
+  border-radius: 50%;
+  border: 8rpx solid rgba(255, 255, 255, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.score-num {
+  font-size: 80rpx;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.score-unit {
+  font-size: 24rpx;
+  opacity: 0.85;
+}
+.score-verdict {
+  margin-top: 24rpx;
+  font-size: 30rpx;
+  letter-spacing: 2rpx;
+}
+.score-stats {
+  display: flex;
+  width: 100%;
+  margin-top: 44rpx;
+}
+.st-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.st-num {
+  font-size: 34rpx;
+  font-weight: 600;
+}
+.st-label {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  opacity: 0.8;
+}
+
+/* 区块标题：红色竖条装饰 + 标题文字 */
+.block-title {
+  display: flex;
+  align-items: center;
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-bottom: 20rpx;
+}
+/* 装饰竖条：红→深红纵向渐变 */
+.block-bar {
+  width: 8rpx;
+  height: 30rpx;
+  border-radius: 4rpx;
+  background: linear-gradient(180deg, var(--red-bright), var(--red-deep));
+  margin-right: 14rpx;
+}
+
+/* 错题 */
+.wrong-item {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid var(--line);
+}
+.wrong-item:last-child {
+  border-bottom: none;
+}
+.wrong-head {
+  display: flex;
+  align-items: flex-start;
+}
+.wrong-title {
+  margin-left: 12rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--text-main);
+}
+.wrong-ans {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  line-height: 1.6;
+  border-radius: 8rpx;
+  padding: 12rpx 20rpx;
+}
+/* 答题色块：我的答案（错误红）/ 正确答案（正确绿），状态色区分 */
+.wrong-my {
+  background: #FDECEC;
+  color: var(--danger);
+}
+.wrong-right {
+  background: #E4F4EA;
+  color: var(--success);
+}
+.wrong-analysis {
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+  line-height: 1.8;
+  background: #FAF9F7;
+  border-radius: 8rpx;
+  padding: 16rpx 20rpx;
+}
+.wrong-analysis-label {
+  color: var(--gold-text);
+  font-weight: 600;
+  margin-right: 12rpx;
+}
+
+.result-actions {
+  margin-top: 12rpx;
+}

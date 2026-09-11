@@ -1,0 +1,63 @@
+<!-- 关于我们 -->
+<view class="page">
+  <!-- 头部 -->
+  <view class="about-hero">
+    <image class="about-logo" src="{{appInfo.iconUrl || '/images/logo.png'}}" mode="aspectFill" />
+    <view class="about-name">{{appInfo.name || '红色纪念馆'}}</view>
+    <view class="about-desc">{{appInfo.desc || '传承红色基因，赓续精神血脉'}}</view>
+  </view>
+
+  <view class="container">
+    <!-- 联系信息（来自场馆指南·地址交通） -->
+    <view class="card" wx:if="{{contacts.length}}">
+      <view class="block-title">
+        <view class="block-bar"></view>
+        <text>场馆信息</text>
+      </view>
+      <view class="cell" wx:for="{{contacts}}" wx:key="title" data-text="{{item.content}}" bindtap="onCopy">
+        <view class="cell-label">{{item.title}}</view>
+        <view class="cell-value">{{item.content}}</view>
+      </view>
+    </view>
+
+    <!-- 服务内容 -->
+    <view class="card">
+      <view class="block-title">
+        <view class="block-bar"></view>
+        <text>服务内容</text>
+      </view>
+      <view class="svc-grid">
+        <view class="svc-item">
+          <view class="svc-icon svc-hall"></view>
+          <text>720°数字展馆</text>
+        </view>
+        <view class="svc-item">
+          <view class="svc-icon svc-resv"></view>
+          <text>线上参观预约</text>
+        </view>
+        <view class="svc-item">
+          <view class="svc-icon svc-quiz"></view>
+          <text>红色知识竞赛</text>
+        </view>
+        <view class="svc-item">
+          <view class="svc-icon svc-guide"></view>
+          <text>场馆指南服务</text>
+        </view>
+        <view class="svc-item">
+          <view class="svc-icon svc-feedback"></view>
+          <text>意见反馈</text>
+        </view>
+        <view class="svc-item">
+          <view class="svc-icon svc-news"></view>
+          <text>红色资讯</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 版权与开放时间信息 -->
+    <view class="about-copyright">
+      <view>开放时间：周二至周日 9:00-17:00（周一闭馆）</view>
+      <view class="mt8">红色纪念馆 版权所有</view>
+    </view>
+  </view>
+</view>

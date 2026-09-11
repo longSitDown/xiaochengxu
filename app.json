@@ -1,0 +1,71 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/hall/hall",
+    "pages/quiz/quiz",
+    "pages/profile/profile",
+    "pages/hall-detail/hall-detail",
+    "pages/artifact/artifact",
+    "pages/artifact-detail/artifact-detail",
+    "pages/panorama/panorama",
+    "pages/quiz-start/quiz-start",
+    "pages/quiz-result/quiz-result",
+    "pages/quiz-history/quiz-history",
+    "pages/quiz-ranking/quiz-ranking",
+    "pages/reservation/reservation",
+    "pages/reservation-form/reservation-form",
+    "pages/reservation-detail/reservation-detail",
+    "pages/visitor-manage/visitor-manage",
+    "pages/guide/guide",
+    "pages/feedback/feedback",
+    "pages/feedback-detail/feedback-detail",
+    "pages/news/news",
+    "pages/news-detail/news-detail",
+    "pages/about/about"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#F5EFE2",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "红色纪念馆",
+    "backgroundColor": "#F5F3F0",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#8A8A8A",
+    "selectedColor": "#C8102E",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tab/home.png",
+        "selectedIconPath": "images/tab/home-active.png"
+      },
+      {
+        "pagePath": "pages/hall/hall",
+        "text": "数字导览",
+        "iconPath": "images/tab/hall.png",
+        "selectedIconPath": "images/tab/hall-active.png"
+      },
+      {
+        "pagePath": "pages/reservation/reservation",
+        "text": "预约参观",
+        "iconPath": "images/tab/resv.png",
+        "selectedIconPath": "images/tab/resv-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/tab/profile.png",
+        "selectedIconPath": "images/tab/profile-active.png"
+      }
+    ]
+  },
+  "usingComponents": {
+    "empty": "/components/empty/empty",
+    "section-title": "/components/section-title/section-title"
+  },
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

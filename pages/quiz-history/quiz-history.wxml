@@ -1,0 +1,40 @@
+<!-- 我的答题历史 -->
+<view class="page">
+  <view class="container">
+    <!-- 最佳成绩摘要：历史最高分 + 统计信息 -->
+    <view class="best-card" wx:if="{{best}}">
+      <view class="best-left">
+        <view class="best-score">{{best.score}}<text class="best-unit">分</text></view>
+        <view class="best-label">历史最佳</view>
+      </view>
+      <view class="best-right">
+        <view class="best-line">答对 {{best.correctCount}} / {{best.totalCount}} 题</view>
+        <view class="best-line">用时 {{best.durationText}}</view>
+        <view class="best-line">累计参与 {{records.length}} 次</view>
+      </view>
+    </view>
+
+    <!-- 无记录时的空状态，可跳转去答题 -->
+    <view wx:if="{{!loading && !records.length}}">
+      <empty text="还没有答题记录" sub="参与知识竞赛，检验学习成果">
+        <view class="btn btn-primary btn-sm empty-btn" bindtap="goQuiz">去答题</view>
+      </empty>
+    </view>
+
+    <!-- 答题记录列表：每条记录可按 id 点击查看解析 -->
+    <view class="card rec-card" wx:for="{{records}}" wx:key="id"
+      data-id="{{item.id}}" bindtap="onRecordTap">
+      <view class="rec-head">
+        <view class="rec-title flex-1 text-ellipsis">{{item.activityTitle}}</view>
+        <view class="rec-score">{{item.score}} 分</view>
+      </view>
+      <view class="rec-meta">
+        <text class="tag tag-red">正确率 {{item.accuracy}}%</text>
+        <text class="rec-meta-text">{{item.correctCount}}/{{item.totalCount}} 题</text>
+        <text class="rec-meta-text">用时 {{item.durationText}}</text>
+        <text class="rec-meta-time">{{item.timeText}}</text>
+      </view>
+      <view class="rec-arrow">查看解析 ›</view>
+    </view>
+  </view>
+</view>

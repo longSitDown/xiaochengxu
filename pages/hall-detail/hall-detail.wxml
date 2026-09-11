@@ -1,0 +1,56 @@
+<!-- 展区详情：头部 + 展品列表 + 语音讲解播放条 -->
+<view class="page" wx:if="{{exhibition}}">
+  <!-- 展区头部 -->
+  <view class="head">
+    <image class="head-bg" src="{{exhibition.cover}}" mode="aspectFill" />
+    <view class="head-mask"></view>
+    <view class="head-body">
+      <view class="head-name">{{exhibition.name}}</view>
+      <view class="head-desc">{{exhibition.description}}</view>
+      <view class="head-btn" bindtap="goPanorama">720° 全景漫游</view>
+    </view>
+  </view>
+
+  <!-- 展品列表 -->
+  <view class="container">
+    <view class="list-head">
+      <view class="list-bar"></view>
+      <text class="list-title">展品陈列</text>
+      <text class="list-count">{{artifacts.length}} 件</text>
+    </view>
+
+    <view wx:if="{{!artifacts.length}}">
+      <empty text="本展区展品整理中" />
+    </view>
+
+    <view class="art-card card" wx:for="{{artifacts}}" wx:key="id" data-id="{{item.id}}" bindtap="goArtifact">
+      <view class="art-cover-box">
+        <image class="art-cover" src="{{item.cover}}" mode="aspectFill" />
+        <view class="art-highlight" wx:if="{{item.isHighlight === '1'}}">重点展品</view>
+        <view class="art-views">{{item.viewsText}} 浏览</view>
+      </view>
+      <view class="art-info">
+        <view class="art-name text-ellipsis">{{item.name}}</view>
+        <view class="art-script text-2lines">{{item.script}}</view>
+        <view class="art-foot">
+          <text class="art-duration">讲解 {{item.durationText}}</text>
+          <!-- 播放/停止按钮：当前播放项切换为波形动画，其余显示三角播放标 -->
+          <view class="art-play {{playingId === item.id ? 'art-playing' : ''}}"
+            data-id="{{item.id}}" catchtap="onPlayTap">
+            <view wx:if="{{playingId !== item.id}}" class="play-triangle"></view>
+            <view wx:else class="play-bars">
+              <view class="bar"></view><view class="bar"></view><view class="bar"></view>
+            </view>
+            <text>{{playingId === item.id ? '播放中' : '听讲解'}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 全局语音讲解播放条 -->
+  <audio-player />
+</view>
+<view wx:elif="{{!loading}}">
+  <empty text="展区不存在" />
+</view>

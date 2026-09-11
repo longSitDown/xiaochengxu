@@ -1,0 +1,59 @@
+<!-- 文物详情：上大图 + 米色信息面板 + 收藏/分享（参照 UI 设计稿） -->
+<view class="page" wx:if="{{artifact}}">
+  <!-- 展品大图（约 55% 高度，浅灰展台底） -->
+  <view class="hero">
+    <image class="hero-img" src="{{artifact.cover}}" mode="aspectFill" />
+    <!-- 红色「文物」印章标识（右上角，窄宽自动竖排） -->
+    <view class="hero-seal">文物</view>
+    <view class="hero-views">{{viewsText}} 人浏览过</view>
+  </view>
+
+  <!-- 信息面板：负 margin 上移，圆角盖住大图底部 -->
+  <view class="panel">
+    <view class="panel-name">{{artifact.name}}</view>
+    <view class="panel-tags">
+      <text class="p-tag">{{artifact.category}}</text>
+      <text class="p-period" wx:if="{{artifact.period}}">{{artifact.period}}</text>
+      <text class="p-highlight" wx:if="{{artifact.isHighlight === '1'}}">重点展品</text>
+    </view>
+    <view class="panel-desc">{{artifact.script}}</view>
+
+    <!-- 语音讲解：三角/波形图标随播放状态切换 -->
+    <view class="play-card" bindtap="onPlayTap">
+      <view class="play-btn {{playing ? 'play-btn-active' : ''}}">
+        <view wx:if="{{!playing}}" class="play-triangle"></view>
+        <view wx:else class="play-bars">
+          <view class="bar"></view><view class="bar"></view><view class="bar"></view><view class="bar"></view>
+        </view>
+      </view>
+      <view class="flex-1">
+        <view class="play-title">语音讲解</view>
+        <view class="play-sub">{{playing ? '正在播放，点击暂停' : '点击收听展品背后的故事'}} · 时长 {{durationText}}</view>
+      </view>
+    </view>
+
+    <!-- 所在展区 -->
+    <view class="exh-row" bindtap="goExhibition" wx:if="{{artifact.exhibitionId}}">
+      <text class="exh-label">所在展区</text>
+      <text class="exh-arrow">前往查看 ›</text>
+    </view>
+  </view>
+
+  <!-- 底部操作栏：收藏 + 分享 -->
+  <view class="action-bar safe-bottom">
+    <view class="action-item {{faved ? 'action-faved' : ''}}" bindtap="onFavTap">
+      <text class="action-icon">{{faved ? '♥' : '♡'}}</text>
+      <text>{{faved ? '已收藏' : '收藏'}}</text>
+    </view>
+    <button class="action-item action-share" open-type="share">
+      <text class="action-icon">↗</text>
+      <text>分享</text>
+    </button>
+  </view>
+
+  <!-- 全局播放条 -->
+  <audio-player />
+</view>
+<view wx:elif="{{!loading}}">
+  <empty text="展品不存在" />
+</view>

@@ -1,0 +1,68 @@
+/* 授权登录弹窗：半透明遮罩 + 居中卡片 */
+
+/* 全屏遮罩：点击空白处可关闭 */
+.auth-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* 居中白色卡片 */
+.auth-card {
+  width: 600rpx;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 48rpx 40rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* Logo 圆角容器 */
+.auth-logo {
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 28rpx;
+  overflow: hidden;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.auth-logo image {
+  width: 96rpx;
+  height: 96rpx;
+}
+.auth-title {
+  margin-top: 24rpx;
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.auth-desc {
+  margin: 16rpx 0 40rpx;
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: var(--text-sub);
+  text-align: center;
+}
+/* 登录按钮：占满卡宽 */
+.auth-btn {
+  width: 100%;
+}
+
+/* 游客入口：下划线小字，弱化处理 */
+.auth-skip {
+  margin-top: 28rpx;
+  font-size: 26rpx;
+  color: var(--text-light);
+  text-decoration: underline;
+}

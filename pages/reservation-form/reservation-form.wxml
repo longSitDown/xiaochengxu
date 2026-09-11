@@ -1,0 +1,231 @@
+<!-- 预约表单（新建 / 改期）：Step1 日历选日期时段 → Step2 预约信息（参照 UI 设计稿） -->
+<view class="page">
+  <!-- 改期提示：改期模式下固定显示原预约日期时段，提示联系人信息保持不变 -->
+  <view class="reschedule-tip" wx:if="{{isReschedule}}">
+    正在为 {{resv.visitDate}} {{resv.timeSlot}} 的预约改期，联系人信息保持不变
+  </view>
+
+  <!-- 顶部公告条：喇叭图标 + 温馨提示 -->
+  <view class="notice-bar">
+    <view class="notice-horn">📢</view>
+    <swiper class="notice-swiper" vertical autoplay circular interval="4000" disable-touch>
+      <swiper-item><view class="notice-text text-ellipsis">入场须出示与预约登记一致的身份证原件</view></swiper-item>
+      <swiper-item><view class="notice-text text-ellipsis">周一闭馆，法定节假日开放安排以公告为准</view></swiper-item>
+      <swiper-item><view class="notice-text text-ellipsis">个人预约每单限 5 人，团体请提前 1-3 个工作日申请</view></swiper-item>
+    </swiper>
+  </view>
+
+  <!-- ============ Step 1：参观日期（月历网格）+ 参观场次 ============ -->
+  <block wx:if="{{step === 1}}">
+    <view class="card cal-card">
+      <view class="cal-head">
+        <view class="block-title">
+          <view class="block-bar"></view>
+          <text>参观日期</text>
+        </view>
+        <view class="cal-month">
+          <text class="cal-month-text">{{monthText}}</text>
+          <text class="cal-month-next" wx:if="{{hasLaterMonth}}" bindtap="onNextMonth">切换年月 ›</text>
+        </view>
+      </view>
+      <!-- 星期表头 -->
+      <view class="cal-week">
+        <text wx:for="{{weeks}}" wx:key="*this" class="{{index === 0 || index === 6 ? 'cal-weekend' : ''}}">{{item}}</text>
+      </view>
+      <!-- 日历网格：空白/范围外灰字/可约白底红边/约满米色/选中深红实心 -->
+      <view class="cal-grid">
+        <view wx:for="{{calendar}}" wx:key="index"
+          class="cal-cell {{item.blank ? 'cal-blank' : ''}} {{item.inRange ? (item.full ? 'cal-full' : 'cal-open') : 'cal-out'}} {{item.selected ? 'cal-selected' : ''}}"
+          data-value="{{item.value}}" data-ok="{{item.inRange && !item.full}}"
+          bindtap="onCalTap">
+          <view class="cal-day">{{item.blank ? '' : item.day}}</view>
+          <view class="cal-mark" wx:if="{{!item.blank && item.inRange}}">{{item.full ? '约满' : '可约'}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 参观场次：仅展示选中日期的时段 -->
+    <view class="card">
+      <view class="block-title">
+        <view class="block-bar"></view>
+        <text>参观场次</text>
+      </view>
+      <!-- 外层遍历 dates 内层用 s 避免变量冲突 -->
+      <block wx:for="{{dates}}" wx:key="value" wx:if="{{item.value === visitDate}}">
+        <view class="slot-row">
+          <view class="slot-item {{timeSlot === s.timeSlot ? 'slot-active' : ''}} {{s.disabled ? 'slot-disabled' : ''}}"
+            wx:for="{{item.slots}}" wx:for-item="s" wx:key="timeSlot"
+            data-slot="{{s.timeSlot}}" data-disabled="{{s.disabled}}" bindtap="onSlotTap">
+            <view class="slot-name">{{s.timeSlot}}</view>
+            <view class="slot-quota">{{s.disabled ? '已约满' : '余 ' + s.available + ' / ' + s.total}}</view>
+          </view>
+        </view>
+      </block>
+      <view wx:if="{{!visitDate}}" class="slot-empty">请先在日历中选择参观日期</view>
+    </view>
+
+    <!-- 改期模式：人数可调整 -->
+    <view class="card" wx:if="{{isReschedule}}">
+      <view class="cell">
+        <view class="cell-label">参观人数</view>
+        <view class="stepper">
+          <view class="stepper-btn" bindtap="onCountMinus">−</view>
+          <view class="stepper-num">{{visitorCount}}</view>
+          <view class="stepper-btn" bindtap="onCountPlus">+</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- ============ Step 2：预约信息 ============ -->
+  <block wx:if="{{step === 2}}">
+    <!-- 类型选择：个人/团体 切换，data-type 传给 onTypeTap -->
+    <view class="card">
+      <view class="block-title">
+        <view class="block-bar"></view>
+        <text>预约类型</text>
+      </view>
+      <view class="type-row">
+        <view class="type-item {{type === '个人' ? 'type-active' : ''}}" data-type="个人" bindtap="onTypeTap">
+          <view class="type-name">个人预约</view>
+          <view class="type-desc">1-5 人 · 即约即审</view>
+        </view>
+        <view class="type-item {{type === '团体' ? 'type-active' : ''}}" data-type="团体" bindtap="onTypeTap">
+          <view class="type-name">团体预约</view>
+          <view class="type-desc">10-100 人 · 提前申请</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 预约信息 -->
+    <view class="card form-card">
+      <view class="block-title">
+        <view class="block-bar"></view>
+        <text>预约信息</text>
+      </view>
+
+      <!-- 个人预约：实名参观人多选，人数由已选数量决定；idCardMask 为脱敏展示 -->
+      <block wx:if="{{type === '个人'}}">
+        <!-- 已选参观人列表：data-idx 用于定位移除索引 -->
+        <view class="visitor-cell" wx:for="{{selectedVisitors}}" wx:key="id">
+          <view class="visitor-avatar">{{item.avatar}}</view>
+          <view class="visitor-info">
+            <view class="visitor-name">{{item.name}}</view>
+            <view class="visitor-idcard">{{item.idCardMask}}</view>
+          </view>
+          <view class="visitor-remove" data-idx="{{index}}" bindtap="onRemoveSelected">×</view>
+        </view>
+        <!-- 打开参观人选择弹层；data-mode="multi" 为多选模式 -->
+        <view class="visitor-add" data-mode="multi" bindtap="openPicker">
+          <view class="visitor-add-plus">＋</view>
+          <text>{{selectedVisitors.length ? '添加 / 选择参观人' : '选择参观人'}}</text>
+          <text class="visitor-add-count" wx:if="{{selectedVisitors.length}}">已选 {{selectedVisitors.length}}/5 人</text>
+        </view>
+        <view class="form-tip">参观人进馆时须出示本人身份证原件核验</view>
+      </block>
+
+      <!-- 团体预约：步进器选人数 + 团体名称 + 联系人实名登记 -->
+      <block wx:if="{{type === '团体'}}">
+        <view class="cell">
+          <view class="cell-label">参观人数</view>
+          <view class="stepper">
+            <view class="stepper-btn" bindtap="onCountMinus">−</view>
+            <view class="stepper-num">{{visitorCount}}</view>
+            <view class="stepper-btn" bindtap="onCountPlus">+</view>
+          </view>
+        </view>
+        <view class="cell">
+          <view class="cell-label">团体名称</view>
+          <input class="cell-input" placeholder="请输入学校 / 单位名称" value="{{organization}}" bindinput="onOrgInput" />
+        </view>
+        <view class="contact-head">
+          <view class="cell-label">联系人信息</view>
+          <!-- 从已有预约人中一键填入联系人（单选模式） -->
+          <view class="contact-pick" data-mode="single" bindtap="openPicker">从预约人选取</view>
+        </view>
+        <view class="cell">
+          <view class="cell-label">姓名</view>
+          <input class="cell-input" placeholder="带队负责人姓名" value="{{contactName}}" bindinput="onNameInput" />
+        </view>
+        <view class="cell">
+          <view class="cell-label">联系电话</view>
+          <input class="cell-input" type="number" maxlength="11" placeholder="请输入手机号" value="{{contactPhone}}" bindinput="onPhoneInput" />
+        </view>
+        <view class="cell">
+          <view class="cell-label">身份证号</view>
+          <input class="cell-input" maxlength="18" placeholder="18 位身份证号码" value="{{contactIdCard}}" bindinput="onIdCardInput" />
+        </view>
+        <view class="form-tip">负责人须持本人身份证原件带队核验入馆</view>
+      </block>
+
+      <view class="cell" style="align-items:flex-start">
+        <view class="cell-label" style="line-height:1.6">备注</view>
+        <textarea class="cell-input remark-input" placeholder="选填，如讲解需求、随行人员情况等" value="{{remark}}" bindinput="onRemarkInput" maxlength="200" />
+      </view>
+    </view>
+
+    <!-- 温馨提示 -->
+    <view class="tips-card">
+      <view class="tips-title">温馨提示</view>
+      <view class="tips-line">· 周一闭馆，法定节假日开放安排以公告为准</view>
+      <view class="tips-line">· 参观人进馆须出示与预约登记一致的身份证原件</view>
+      <view class="tips-line">· 个人预约每单限 5 人，团体预约请提前 1-3 个工作日提交</view>
+      <view class="tips-line">· 审核结果将通过公众号消息推送通知，请注意查收</view>
+    </view>
+  </block>
+
+  <!-- 底部留白：避免内容被固定底栏遮挡 -->
+  <view class="bottom-space"></view>
+</view>
+
+<!-- 底部固定栏：Step1 已选摘要+下一步 / Step2 上一步+提交 / 改期确认改期 -->
+<view class="bottom-bar safe-bottom">
+  <view class="bottom-info" wx:if="{{step === 1}}">
+    <view class="bottom-date">{{visitDate || '请选择参观日期'}}</view>
+    <view class="bottom-slot">{{timeSlot || '请选择参观场次'}}</view>
+  </view>
+  <view class="bottom-back" wx:if="{{step === 2}}" bindtap="onPrevStep">上一步</view>
+  <view class="bottom-btn {{(step === 1 && (!visitDate || !timeSlot)) || submitting ? 'bottom-btn-disabled' : ''}}" bindtap="onBottomTap">
+    {{isReschedule ? '确认改期' : (step === 1 ? '下一步' : (submitting ? '提交中…' : '提交预约'))}}
+  </view>
+</view>
+
+<!-- 参观人选择弹层（个人多选 / 团体选联系人） -->
+<view class="picker-mask" wx:if="{{showPicker}}" bindtap="closePicker">
+  <!-- mask 点击关闭，内部盒子用 catchtap="noop" 阻止冒泡避免误关闭 -->
+  <view class="picker-box" catchtap="noop">
+    <view class="picker-title">{{pickerMode === 'multi' ? '选择参观人' : '选择联系人'}}</view>
+
+    <scroll-view scroll-y class="picker-list">
+      <view wx:if="{{!pickerItems.length}}" class="picker-empty">暂无预约人，请先添加</view>
+      <!-- 预约人项：单选模式用 onPickerPick，多选模式用 onPickerToggle 切换 checked -->
+      <view class="picker-item {{item.checked ? 'picker-item-checked' : ''}}"
+        wx:for="{{pickerItems}}" wx:key="id" data-id="{{item.id}}"
+        bindtap="{{pickerMode === 'multi' ? 'onPickerToggle' : 'onPickerPick'}}">
+        <view class="visitor-avatar">{{item.avatar}}</view>
+        <view class="visitor-info">
+          <view class="visitor-name">
+            {{item.name}}
+            <!-- isDefault 标记默认联系人 -->
+            <text class="picker-default" wx:if="{{item.isDefault === '1'}}">默认</text>
+          </view>
+          <view class="visitor-idcard">{{item.idCardMask}}</view>
+        </view>
+        <!-- 右侧圆圈勾选标识 -->
+        <view class="picker-check {{item.checked ? 'picker-check-on' : ''}}"></view>
+      </view>
+    </scroll-view>
+
+    <!-- 快捷新增预约人入口 -->
+    <view class="picker-quick" bindtap="onQuickAdd">＋ 新增预约人</view>
+
+    <!-- 仅多选模式有确认按钮，已选数量实时回显 -->
+    <view class="btn btn-primary btn-block" wx:if="{{pickerMode === 'multi'}}" bindtap="onPickerConfirm">
+      确定{{pickerCheckedCount ? '（已选 ' + pickerCheckedCount + ' 人）' : ''}}
+    </view>
+  </view>
+</view>
+
+<!-- 快捷新增预约人弹层：复用通用组件 visitor-editor -->
+<visitor-editor show="{{showEditor}}" editing="{{null}}" userId="{{userId}}"
+  bind:saved="onEditorSaved" bind:close="onEditorClose" />

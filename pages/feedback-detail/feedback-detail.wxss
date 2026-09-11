@@ -1,0 +1,125 @@
+/* 反馈详情样式 */
+.fd-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.fd-status {
+  padding: 6rpx 20rpx;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+}
+/* 顶端状态徽标配色：待处理(橙)/处理中(蓝)/已办结(绿) */
+.fs-wait { background: #FCF0DF; color: var(--warning); }
+.fs-doing { background: #E8F0FC; color: var(--info); }
+.fs-done { background: #E4F4EA; color: var(--success); }
+.fd-time {
+  font-size: 22rpx;
+  color: var(--text-light);
+}
+.fd-content {
+  margin-top: 20rpx;
+  font-size: 28rpx;
+  color: var(--text-main);
+  line-height: 1.8;
+}
+.fd-images {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 20rpx;
+}
+.fd-image {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 12rpx;
+  margin: 0 16rpx 16rpx 0;
+}
+.fd-contact {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+}
+
+/* 区块标题 */
+.block-title {
+  display: flex;
+  align-items: center;
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-bottom: 24rpx;
+}
+.block-bar {
+  width: 8rpx;
+  height: 30rpx;
+  border-radius: 4rpx;
+  background: linear-gradient(180deg, var(--red-bright), var(--red-deep));
+  margin-right: 14rpx;
+}
+
+/* 时间线 */
+.tl {
+  padding-left: 8rpx;
+}
+.tl-item {
+  position: relative;
+  display: flex;
+  padding: 0 0 36rpx 36rpx;
+}
+/* 时间线条目左侧的竖线（除最后一项外），伪元素绘制 */
+.tl-item::before {
+  content: "";
+  position: absolute;
+  left: 11rpx;
+  top: 26rpx;
+  bottom: 6rpx;
+  width: 3rpx;
+  background: var(--line);
+}
+
+/* 最后一项不再显示竖线，收拢底部间距 */
+.tl-item:last-child {
+  padding-bottom: 8rpx;
+}
+.tl-item:last-child::before {
+  display: none;
+}
+
+/* 时间线圆点：未完成（灰） */
+.tl-dot {
+  position: absolute;
+  left: 0;
+  top: 8rpx;
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+  background: #E3E0DB;
+}
+
+/* 已完成圆点：主题红实心 + 浅红外发光环 */
+.tl-dot-done {
+  background: var(--primary);
+  box-shadow: 0 0 0 6rpx var(--primary-light);
+}
+.tl-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.tl-title-wait {
+  color: var(--text-light);
+  font-weight: 400;
+}
+.tl-time {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: var(--text-light);
+}
+.tl-reply {
+  margin-top: 16rpx;
+  padding: 20rpx 24rpx;
+  background: #E4F4EA;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  color: var(--text-main);
+  line-height: 1.8;
+}

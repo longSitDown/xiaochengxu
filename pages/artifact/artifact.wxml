@@ -1,0 +1,30 @@
+<!-- 文物鉴赏：分类筛选 + 馆藏卡片列表（参照 UI 设计稿） -->
+<view class="page">
+  <!-- 分类筛选 pills：全部 / 武器军械 / 文献文书 / 实物器具 -->
+  <scroll-view scroll-x class="filter-scroll" enhanced show-scrollbar="{{false}}">
+    <view class="filter-list">
+      <view class="filter-item {{activeTab === item ? 'filter-active' : ''}}"
+        wx:for="{{tabs}}" wx:key="*this" data-tab="{{item}}" bindtap="onTabTap">{{item}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 馆藏卡片：大图 + 名称 + 说明 -->
+  <view class="artifact-list">
+    <view class="artifact-card" wx:for="{{list}}" wx:key="id"
+      data-id="{{item.id}}" bindtap="onItemTap">
+      <view class="artifact-figure">
+        <image class="artifact-img" src="{{item.cover}}" mode="aspectFill" />
+        <view class="artifact-tag">{{item.category}}</view>
+      </view>
+      <view class="artifact-caption">
+        <view class="artifact-name">{{item.name}}</view>
+        <view class="artifact-desc text-2lines">{{item.script}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空态 / 加载提示 -->
+  <view wx:if="{{!loading && !list.length}}">
+    <empty text="暂无{{activeTab === '全部' ? '' : activeTab}}类藏品" sub="敬请期待" />
+  </view>
+</view>

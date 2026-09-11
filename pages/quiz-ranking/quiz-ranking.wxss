@@ -1,0 +1,159 @@
+/* 排行榜样式 */
+/* 领奖台容器：红色渐变背景，底部对齐，冠军居中 */
+.podium-wrap {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 60rpx 24rpx 40rpx;
+  background: linear-gradient(180deg, var(--red-bright) 0%, var(--primary) 55%, rgba(200, 16, 46, 0) 100%);
+}
+/* 领奖者列：头像 + 名次奖牌 + 名字 + 分数 + 底座 */
+.podium {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200rpx;
+}
+.podium-avatar {
+  position: relative;
+  margin-bottom: 12rpx;
+}
+/* 冠军头像比亚军/季军更大 */
+.p-first .podium-avatar {
+  width: 132rpx;
+  height: 132rpx;
+}
+.p-second .podium-avatar,
+.p-third .podium-avatar {
+  width: 104rpx;
+  height: 104rpx;
+}
+.podium-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 6rpx solid rgba(255, 255, 255, 0.9);
+}
+/* 名次奖牌：叠放在头像右下角的圆形徽章 */
+.podium-medal {
+  position: absolute;
+  right: -10rpx;
+  bottom: -6rpx;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #6E4A00;
+  border: 3rpx solid #FFF;
+}
+/* 奖牌配色：金 / 银 / 铜 */
+.m-gold { background: linear-gradient(135deg, #FFD86D, #E8A200); }
+.m-silver { background: linear-gradient(135deg, #E8E8E8, #A8A8A8); color: #555; }
+.m-bronze { background: linear-gradient(135deg, #E8B08A, #B87040); color: #5A2E10; }
+
+.podium-name {
+  max-width: 200rpx;
+  font-size: 26rpx;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+.podium-score {
+  margin-top: 4rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #FFE9B8;
+}
+/* 领奖台底座：高度决定名次高低，冠军最高 */
+.podium-base {
+  width: 100%;
+  margin-top: 12rpx;
+  border-radius: 12rpx 12rpx 0 0;
+  background: rgba(255, 255, 255, 0.92);
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--text-sub);
+  line-height: 2.6;
+}
+/* 底座高度：冠军 120 / 亚军 88 / 季军 72 */
+.p-first .podium-base { height: 120rpx; }
+.p-second .podium-base { height: 88rpx; }
+.p-third .podium-base { height: 72rpx; }
+.p-first { margin: 0 12rpx; }
+
+/* 区块标题 */
+.block-title {
+  display: flex;
+  align-items: center;
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+}
+.block-bar {
+  width: 8rpx;
+  height: 30rpx;
+  border-radius: 4rpx;
+  background: linear-gradient(180deg, var(--red-bright), var(--red-deep));
+  margin-right: 14rpx;
+}
+
+/* 榜单行：每行一条，底部以分隔线相隔 */
+.rank-row {
+  display: flex;
+  align-items: center;
+  padding: 22rpx 12rpx;
+  border-bottom: 1rpx solid var(--line);
+  border-radius: 8rpx;
+}
+.rank-row:last-child {
+  border-bottom: none;
+}
+/* 当前用户行高亮：浅色主色背景 */
+.rank-mine {
+  background: var(--primary-light);
+}
+.rank-no {
+  width: 64rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-sub);
+  text-align: center;
+}
+.rank-avatar {
+  width: 72rpx;
+  height: 72rpx;
+  margin-right: 18rpx;
+}
+.rank-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+.rank-name {
+  font-size: 28rpx;
+  color: var(--text-main);
+}
+.rank-side {
+  text-align: right;
+}
+.rank-score {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--primary);
+}
+.rank-dur {
+  margin-top: 4rpx;
+  font-size: 20rpx;
+  color: var(--text-light);
+}
+
+/* 榜单规则提示：底部居中的说明文字 */
+.rank-tip {
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--text-light);
+  padding: 24rpx 0 40rpx;
+}

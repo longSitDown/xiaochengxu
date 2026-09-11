@@ -1,0 +1,388 @@
+/* 首页样式：红色 Hero + 8 宫格 + 新闻资讯（参照 UI 设计稿） */
+.page {
+  padding-bottom: 40rpx;
+}
+
+/* ---- Hero 顶部横幅 ---- */
+.hero {
+  position: relative;
+  padding: 24rpx 32rpx 96rpx;
+  background: linear-gradient(160deg, #9E0B20 0%, #C8102E 55%, #D92543 100%);
+  overflow: hidden;
+}
+/* 斜向飘带纹理（设计稿红绸元素） */
+.hero-deco {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.08) 30%, rgba(255, 255, 255, 0.08) 34%, transparent 34%),
+    linear-gradient(115deg, transparent 46%, rgba(255, 255, 255, 0.06) 46%, rgba(255, 255, 255, 0.06) 50%, transparent 50%),
+    linear-gradient(115deg, transparent 62%, rgba(232, 200, 140, 0.10) 62%, rgba(232, 200, 140, 0.10) 66%, transparent 66%);
+  pointer-events: none;
+}
+/* 金星装饰（设计稿五角星元素） */
+.hero-star {
+  position: absolute;
+  background: radial-gradient(circle, rgba(232, 200, 140, 0.85) 0%, rgba(232, 200, 140, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.hero-star-1 {
+  width: 220rpx;
+  height: 220rpx;
+  right: -40rpx;
+  top: 40rpx;
+}
+.hero-star-2 {
+  width: 140rpx;
+  height: 140rpx;
+  left: 20rpx;
+  bottom: 90rpx;
+  opacity: 0.7;
+}
+.hero-inner {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding-top: 40rpx;
+}
+.hero-title-img {
+  width: 620rpx;
+}
+
+/* 顶部操作栏：搜索框 + 菜单按钮 */
+.hero-topbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+.hero-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 68rpx;
+  padding: 0 24rpx;
+  margin-right: 20rpx;
+  border-radius: 34rpx;
+  background: rgba(255, 255, 255, 0.22);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+}
+.hero-search-icon {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 32rpx;
+  margin-right: 12rpx;
+  line-height: 1;
+}
+.hero-search-text {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 26rpx;
+}
+.hero-menu {
+  width: 68rpx;
+  height: 68rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.hero-menu-icon {
+  color: #FFFFFF;
+  font-size: 40rpx;
+  line-height: 1;
+}
+
+/* 公告条：白底圆角悬浮在 hero 底部 */
+.hero-notice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 36rpx;
+  height: 72rpx;
+  padding: 0 8rpx 0 0;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 36rpx;
+  box-shadow: 0 6rpx 20rpx rgba(120, 8, 24, 0.25);
+}
+.hero-notice-badge {
+  flex-shrink: 0;
+  margin: 8rpx 0 8rpx 8rpx;
+  padding: 0 20rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  border-radius: 28rpx;
+  background: linear-gradient(135deg, var(--red-bright), var(--red-deep));
+  color: #FFFFFF;
+  font-size: 24rpx;
+}
+.hero-notice-swiper {
+  flex: 1;
+  height: 72rpx;
+}
+.hero-notice-text {
+  line-height: 72rpx;
+  font-size: 26rpx;
+  color: var(--text-main);
+}
+.hero-notice-arrow {
+  flex-shrink: 0;
+  padding: 0 16rpx;
+  color: var(--text-light);
+  font-size: 32rpx;
+}
+
+/* ---- 8 宫格 ---- */
+.entry-card {
+  position: relative;
+  margin: -56rpx 24rpx 24rpx;
+  background: var(--card);
+  border-radius: 20rpx;
+  padding: 32rpx 12rpx 20rpx;
+  box-shadow: 0 8rpx 24rpx rgba(120, 8, 24, 0.08);
+}
+.entry-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+.entry-item {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 28rpx;
+}
+.entry-icon {
+  width: 96rpx;
+  height: 96rpx;
+  margin-bottom: 12rpx;
+}
+.entry-name {
+  font-size: 24rpx;
+  color: var(--text-main);
+}
+
+/* ---- 纪念馆简介 ---- */
+.intro-card {
+  margin: 0 24rpx 24rpx;
+  background: var(--card);
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(120, 8, 24, 0.08);
+}
+.intro-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+.intro-bar {
+  width: 8rpx;
+  height: 32rpx;
+  border-radius: 4rpx;
+  background: linear-gradient(180deg, var(--red-bright), var(--red-deep));
+  margin-right: 14rpx;
+}
+.intro-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.intro-text {
+  font-size: 26rpx;
+  color: var(--text-sub);
+  line-height: 1.8;
+  text-align: justify;
+}
+
+/* ---- 荣誉资质 ---- */
+.honor-card {
+  margin: 0 24rpx 24rpx;
+  background: var(--card);
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx 20rpx;
+  box-shadow: 0 8rpx 24rpx rgba(120, 8, 24, 0.08);
+}
+.honor-scroll {
+  white-space: nowrap;
+  margin-top: 4rpx;
+}
+.honor-list {
+  display: flex;
+  padding: 4rpx 0 8rpx;
+}
+.honor-item {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200rpx;
+  margin-right: 24rpx;
+}
+.honor-badge {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #F4E9D8, #E8D5A8);
+  border: 4rpx solid var(--gold);
+  color: var(--gold-text);
+  font-size: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14rpx;
+  box-shadow: 0 4rpx 12rpx rgba(160, 124, 56, 0.2);
+}
+.honor-name {
+  font-size: 22rpx;
+  color: var(--text-sub);
+  line-height: 1.4;
+  text-align: center;
+  white-space: normal;
+}
+
+/* ---- 新闻资讯 ---- */
+.news-card {
+  margin: 0 24rpx 24rpx;
+  background: var(--card);
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx 12rpx;
+  box-shadow: 0 8rpx 24rpx rgba(120, 8, 24, 0.08);
+}
+.news-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+.news-block-title {
+  display: flex;
+  align-items: center;
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.news-bar {
+  width: 8rpx;
+  height: 32rpx;
+  border-radius: 4rpx;
+  background: linear-gradient(180deg, var(--red-bright), var(--red-deep));
+  margin-right: 14rpx;
+}
+.news-more {
+  font-size: 26rpx;
+  color: var(--text-sub);
+}
+
+/* 分类 pills（米色胶囊，选中描边） */
+.news-tabs {
+  white-space: nowrap;
+  margin-bottom: 8rpx;
+}
+.news-tabs-inner {
+  display: flex;
+  padding: 4rpx 0 16rpx;
+}
+.news-tab {
+  flex-shrink: 0;
+  padding: 10rpx 30rpx;
+  margin-right: 16rpx;
+  border-radius: 32rpx;
+  background: var(--gold-light);
+  color: var(--gold-text);
+  font-size: 24rpx;
+}
+.news-tab-active {
+  background: #FFFFFF;
+  border: 2rpx solid var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* 新闻列表项：左图右文 */
+.news-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--line);
+}
+.news-item:last-child {
+  border-bottom: none;
+}
+.news-cover {
+  width: 200rpx;
+  height: 140rpx;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+}
+.news-info {
+  flex: 1;
+  min-width: 0;
+  padding-left: 20rpx;
+}
+.news-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+.news-meta {
+  display: flex;
+  align-items: center;
+  margin-top: 14rpx;
+}
+.news-date {
+  margin-left: 16rpx;
+  font-size: 22rpx;
+  color: var(--text-light);
+}
+
+/* ---- 公告弹窗（保留原有交互） ---- */
+.popup-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.popup-box {
+  width: 600rpx;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 40rpx 32rpx 32rpx;
+}
+.popup-head {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20rpx;
+}
+.popup-badge {
+  padding: 6rpx 24rpx;
+  border-radius: 24rpx;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 24rpx;
+}
+.popup-badge-urgent {
+  background: #FDECEC;
+  color: var(--danger);
+}
+.popup-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+.popup-content {
+  max-height: 400rpx;
+  font-size: 26rpx;
+  color: var(--text-sub);
+  line-height: 1.8;
+  margin-bottom: 28rpx;
+}
+.popup-btn {
+  width: 100%;
+}
