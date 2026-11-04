@@ -5,6 +5,7 @@
 const feedbackApi = require('../../api/feedback')
 const userApi = require('../../api/user')
 const { fromNow } = require('../../utils/format')
+const app = getApp()
 
 // 反馈状态 → 样式类
 const STATUS_CLASS = {
@@ -94,13 +95,17 @@ Page({
     }
     const user = userApi.getUser()
     this.setData({ submitting: true })
-    feedbackApi
-      .createFeedback({
-        userId: user ? user.id : '匿名',
-        content: content.trim(),
-        images: this.data.images,
-        contact: contact.trim()
-      })
+    // 写操作前置：确保有登录身份，提交内容已填好，登录失败不影响已输入内容
+    app
+      .ensureLogin()
+      .then((me) =>
+        feedbackApi.createFeedback({
+          userId: me.id || (user && user.id) || '匿名',
+          content: content.trim(),
+          images: this.data.images,
+          contact: contact.trim()
+        })
+      )
       .then(() => {
         wx.showToast({ title: '提交成功', icon: 'success' })
         this.setData({ content: '', images: [], submitting: false, tab: 'mine' })

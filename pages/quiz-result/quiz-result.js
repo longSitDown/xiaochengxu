@@ -68,6 +68,7 @@ Page({
   },
 
   goHome() {
-    wx.switchTab({ url: '/pages/quiz/quiz' })
+    // 「返回活动列表」：quiz 不在 tabBar 中，switchTab 会静默失败，改用 navigateTo
+    wx.navigateTo({ url: '/pages/quiz/quiz' })
   }
 })

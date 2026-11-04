@@ -190,6 +190,22 @@
 }
 
 /* 页脚版权文案 */
+/* ---------------- 退出登录 ---------------- */
+.logout-card {
+  padding: 0;
+  overflow: hidden;
+}
+.logout-btn {
+  padding: 30rpx 0;
+  text-align: center;
+  font-size: 30rpx;
+  color: var(--danger);
+  letter-spacing: 2rpx;
+}
+.logout-btn-hover {
+  background: #FAF7F6;
+}
+
 .profile-copyright {
   text-align: center;
   margin-top: 48rpx;
@@ -197,3 +213,109 @@
   color: var(--text-light);
   letter-spacing: 2rpx;
 }
+
+/* ---------------- 头像按钮（chooseAvatar） ---------------- */
+/* button 自带背景/边框/内边距，需完全重置才能包住圆形头像 */
+.user-avatar-btn,
+.edit-avatar-btn {
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border-radius: 0;
+  line-height: normal;
+  font-size: 0;
+}
+.user-avatar-btn::after,
+.edit-avatar-btn::after {
+  border: none;
+}
+.user-avatar-btn {
+  margin-right: 28rpx;
+  flex-shrink: 0;
+}
+
+/* ---------------- 资料编辑面板 ---------------- */
+.edit-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 900;
+}
+.edit-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 901;
+  background: #FFF;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 40rpx 40rpx calc(40rpx + env(safe-area-inset-bottom));
+}
+.edit-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-main);
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+.edit-row {
+  display: flex;
+  align-items: center;
+  min-height: 108rpx;
+  border-bottom: 2rpx solid var(--border-light, #F0F0F0);
+}
+.edit-label {
+  width: 120rpx;
+  font-size: 28rpx;
+  color: var(--text-sub);
+  flex-shrink: 0;
+}
+.edit-avatar-btn {
+  display: flex;
+  align-items: center;
+}
+.edit-avatar {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: #F5F5F5;
+}
+.edit-hint {
+  margin-left: 20rpx;
+  font-size: 24rpx;
+  color: var(--primary);
+}
+.edit-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: var(--text-main);
+  text-align: right;
+}
+.edit-placeholder {
+  color: var(--text-light);
+}
+.edit-actions {
+  display: flex;
+  margin-top: 40rpx;
+}
+.edit-btn-plain,
+.edit-btn-save {
+  flex: 1;
+  text-align: center;
+  line-height: 88rpx;
+  height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+}
+.edit-btn-plain {
+  background: #F5F5F5;
+  color: var(--text-sub);
+  margin-right: 24rpx;
+}
+.edit-btn-save {
+  color: #FFF;
+}
+

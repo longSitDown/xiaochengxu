@@ -6,6 +6,14 @@ miniprogram_npm/
 # 云函数 node_modules
 cloudfunctions/*/node_modules/
 
+# ==================== 后端服务 ====================
+# 含微信 appsecret / 明道云 AppKey+Secret，绝对不能提交
+server/.env
+# 头像上传的本地文件目录
+server/uploads/
+# 后端日志
+server/*.log
+
 # ==================== Node.js ====================
 node_modules/
 npm-debug.log*

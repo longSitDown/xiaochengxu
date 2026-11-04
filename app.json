@@ -43,12 +43,6 @@
         "selectedIconPath": "images/tab/home-active.png"
       },
       {
-        "pagePath": "pages/hall/hall",
-        "text": "数字导览",
-        "iconPath": "images/tab/hall.png",
-        "selectedIconPath": "images/tab/hall-active.png"
-      },
-      {
         "pagePath": "pages/reservation/reservation",
         "text": "预约参观",
         "iconPath": "images/tab/resv.png",

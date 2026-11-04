@@ -10,7 +10,7 @@
     </view>
   </view>
 
-  <!-- 预约入口卡片：个人 / 团体（悬浮压在 Hero 底部） -->
+  <!-- 预约入口卡片：个人预约（团体卡片代码保留，由 config.BLOCKS.groupReservation 控制，当前已下线） -->
   <view class="entry-wrap">
     <view class="entry-card" data-type="个人" bindtap="goCreate">
       <view class="entry-ribbon"></view>
@@ -21,7 +21,7 @@
       </view>
       <view class="entry-arrow">›</view>
     </view>
-    <view class="entry-card" data-type="团体" bindtap="goCreate">
+    <view class="entry-card" wx:if="{{showGroup}}" data-type="团体" bindtap="goCreate">
       <view class="entry-ribbon entry-ribbon-gold"></view>
       <view class="entry-figure entry-figure-gold">团</view>
       <view class="entry-body">
@@ -40,7 +40,7 @@
         <text>开放须知</text>
       </view>
       <view class="info-text">· 参观人进馆须出示与预约登记一致的身份证原件</view>
-      <view class="info-text">· 个人预约每单限 5 人，团体预约请提前 1-3 个工作日提交</view>
+      <view class="info-text">· 个人预约每单限 5 人</view>
       <view class="info-text">· 审核结果将通过公众号消息推送通知，请注意查收</view>
     </view>
     <view class="info-divider"></view>

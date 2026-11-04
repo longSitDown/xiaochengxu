@@ -3,7 +3,7 @@
  */
 const { request } = require('./request')
 const { flattenRows, flattenRow, buildFields, filterGroup, filterCond } = require('./adapters')
-const { safeParse } = require('../utils/format')
+const { safeParse, toMysqlDatetime } = require('../utils/format')
 
 const WS = 'feedbacks'
 
@@ -27,7 +27,8 @@ function createFeedback(data) {
             status: '待处理',
             reply: '',
             replyTime: '',
-            createTime: new Date().toISOString()
+            // 明道云 DateTime(16) 要求 'YYYY-MM-DD HH:mm:ss'，不可用 toISOString()
+            createTime: toMysqlDatetime(new Date())
           },
           data,
           { images: JSON.stringify(data.images || []) }

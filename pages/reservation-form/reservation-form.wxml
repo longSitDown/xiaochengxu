@@ -11,7 +11,7 @@
     <swiper class="notice-swiper" vertical autoplay circular interval="4000" disable-touch>
       <swiper-item><view class="notice-text text-ellipsis">入场须出示与预约登记一致的身份证原件</view></swiper-item>
       <swiper-item><view class="notice-text text-ellipsis">周一闭馆，法定节假日开放安排以公告为准</view></swiper-item>
-      <swiper-item><view class="notice-text text-ellipsis">个人预约每单限 5 人，团体请提前 1-3 个工作日申请</view></swiper-item>
+      <swiper-item><view class="notice-text text-ellipsis">个人预约每单限 5 人，请如实填写参观人信息</view></swiper-item>
     </swiper>
   </view>
 
@@ -79,25 +79,7 @@
 
   <!-- ============ Step 2：预约信息 ============ -->
   <block wx:if="{{step === 2}}">
-    <!-- 类型选择：个人/团体 切换，data-type 传给 onTypeTap -->
-    <view class="card">
-      <view class="block-title">
-        <view class="block-bar"></view>
-        <text>预约类型</text>
-      </view>
-      <view class="type-row">
-        <view class="type-item {{type === '个人' ? 'type-active' : ''}}" data-type="个人" bindtap="onTypeTap">
-          <view class="type-name">个人预约</view>
-          <view class="type-desc">1-5 人 · 即约即审</view>
-        </view>
-        <view class="type-item {{type === '团体' ? 'type-active' : ''}}" data-type="团体" bindtap="onTypeTap">
-          <view class="type-name">团体预约</view>
-          <view class="type-desc">10-100 人 · 提前申请</view>
-        </view>
-      </view>
-    </view>
-
-    <!-- 预约信息 -->
+    <!-- 预约信息：新建预约固定为「个人」（无类型切换），团体字段仅在改期历史团体订单时出现 -->
     <view class="card form-card">
       <view class="block-title">
         <view class="block-bar"></view>
@@ -124,8 +106,9 @@
         <view class="form-tip">参观人进馆时须出示本人身份证原件核验</view>
       </block>
 
-      <!-- 团体预约：步进器选人数 + 团体名称 + 联系人实名登记 -->
+      <!-- 团体预约：仅改期历史团体订单时出现（新建预约已无此入口） -->
       <block wx:if="{{type === '团体'}}">
+        <view class="form-tip">该订单为团体预约，请核对参观人数与联系人信息</view>
         <view class="cell">
           <view class="cell-label">参观人数</view>
           <view class="stepper">
@@ -169,7 +152,7 @@
       <view class="tips-title">温馨提示</view>
       <view class="tips-line">· 周一闭馆，法定节假日开放安排以公告为准</view>
       <view class="tips-line">· 参观人进馆须出示与预约登记一致的身份证原件</view>
-      <view class="tips-line">· 个人预约每单限 5 人，团体预约请提前 1-3 个工作日提交</view>
+      <view class="tips-line">· 个人预约每单限 5 人</view>
       <view class="tips-line">· 审核结果将通过公众号消息推送通知，请注意查收</view>
     </view>
   </block>

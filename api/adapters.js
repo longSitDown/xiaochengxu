@@ -7,17 +7,39 @@
  *
  *   flattenRow(row, ws)  明道云行记录 → 扁平业务对象（附件取首图 URL、单选取 key、数值转 Number）
  *   buildFields(obj, ws) 扁平业务对象 → 明道云 { fields: [{id, value}] } 写入格式
+ *
+ * 对接明道云后的三处增强：
+ *   1. 单选/多选 key 映射：真实环境的选项 key 多为数字串，而页面按中文标签判断。
+ *      这里按 config/option-keys.js 做双向转换（未配置时为恒等映射，mock 行为不变）。
+ *   2. 日期规范化：Date(15) 写 'YYYY-MM-DD'、DateTime(16) 写 'YYYY-MM-DD HH:mm:ss'，
+ *      无论上游传 ISO 还是本地时间串都能落到正确格式。
+ *   3. 筛选值规范化：关联记录(29) 的 eq 需传 rowId 数组，in/between 等运算符需数组值。
  */
 const { SCHEMES } = require('./mock/schema')
+const optionKeys = require('../config/option-keys')
+const { toMysqlDate, toMysqlDatetime } = require('../utils/format')
 
 // 明道云字段类型（type）数字编码
 const ATTACH = '14'
 const SINGLE = '9'
 const MULTI = '10'
 const NUMBER = '6'
+const DATE = '15'
+const DATETIME = '16'
+const RELATION = '29'
+
+/** 必须传数组值的运算符（mingdao-api.md 7.2 / 7.4 第 5 条） */
+const ARRAY_OPERATORS = ['in', 'notin', 'between', 'notbetween', 'concurrent', 'belongsto', 'notbelongsto']
+
+/** 按别名 + 字段别名查字段定义 */
+function fieldOf(ws, field) {
+  const schema = SCHEMES[ws]
+  if (!schema) return null
+  return schema.fields.filter((f) => f.id === field)[0] || null
+}
 
 /** 明道云字段值 → 业务字段值 */
-function normalizeOut(value, f) {
+function normalizeOut(value, f, ws) {
   switch (f.type) {
     case ATTACH: // 附件 → 取第一个附件的 URL 字符串
       if (Array.isArray(value) && value.length) {
@@ -25,14 +47,23 @@ function normalizeOut(value, f) {
         return typeof a === 'string' ? a : a.url || ''
       }
       return ''
-    case SINGLE: // 单选 → key 字符串
-      if (Array.isArray(value)) return value.length ? value[0] : ''
-      return value == null ? '' : value
-    case MULTI: // 多选 → key 数组
-      if (Array.isArray(value)) return value
-      return value ? String(value).split(',').filter(Boolean) : []
+    case SINGLE: {
+      // 单选 → 业务值（优先按映射表把选项 key 翻回中文标签）
+      const raw = Array.isArray(value) ? (value.length ? value[0] : '') : value
+      if (raw == null || raw === '') return ''
+      return optionKeys.toLabel(ws, f.id, raw)
+    }
+    case MULTI: {
+      // 多选 → 业务值数组
+      const arr = Array.isArray(value) ? value : value ? String(value).split(',').filter(Boolean) : []
+      return arr.map((v) => optionKeys.toLabel(ws, f.id, v))
+    }
     case NUMBER:
       return Number(value) || 0
+    case DATE:
+      return value == null ? '' : toMysqlDate(value)
+    case DATETIME:
+      return value == null ? '' : toMysqlDatetime(value)
     default:
       return value == null ? '' : value
   }
@@ -50,8 +81,8 @@ function flattenRow(row, ws) {
   const fields = row.fields || []
   if (schema) {
     schema.fields.forEach((f) => {
-      const item = fields.find((x) => x.id === f.id)
-      out[f.id] = normalizeOut(item ? item.value : '', f)
+      const item = fields.filter((x) => x.id === f.id)[0]
+      out[f.id] = normalizeOut(item ? item.value : '', f, ws)
     })
   } else {
     // 无表结构定义时原样透传
@@ -76,17 +107,28 @@ function flattenRows(listData, ws) {
 }
 
 /** 业务字段值 → 明道云写入格式（mingdao-api.md 6.3） */
-function formatIn(value, f) {
+function formatIn(value, f, ws) {
   switch (f.type) {
     case ATTACH: // 附件 → JSON 字符串 [{name, url}]
       if (!value) return ''
       return JSON.stringify([{ name: String(value).split('/').pop(), url: String(value) }])
-    case SINGLE: // 单选 → 选项 key 数组
-      return value == null || value === '' ? [] : [String(value)]
-    case MULTI: // 多选 → 选项 key 数组
-      return Array.isArray(value) ? value.map(String) : String(value || '').split(',').filter(Boolean)
+    case SINGLE: {
+      // 单选 → 选项 key 数组（业务值先按映射表转 key）
+      const raw = Array.isArray(value) ? (value.length ? value[0] : '') : value
+      if (raw == null || raw === '') return []
+      return [String(optionKeys.toKey(ws, f.id, raw))]
+    }
+    case MULTI: {
+      // 多选 → 选项 key 数组
+      const arr = Array.isArray(value) ? value : String(value || '').split(',').filter(Boolean)
+      return arr.map((v) => String(optionKeys.toKey(ws, f.id, v)))
+    }
     case NUMBER: // 数值 → 数字字符串
       return String(value == null ? 0 : value)
+    case DATE: // 日期 → YYYY-MM-DD
+      return value ? toMysqlDate(value) : ''
+    case DATETIME: // 时间 → YYYY-MM-DD HH:mm:ss
+      return value ? toMysqlDatetime(value) : ''
     default:
       return value == null ? '' : String(value)
   }
@@ -106,7 +148,7 @@ function buildFields(obj, ws) {
   }
   return schema.fields
     .filter((f) => obj[f.id] !== undefined)
-    .map((f) => ({ id: f.id, value: formatIn(obj[f.id], f) }))
+    .map((f) => ({ id: f.id, value: formatIn(obj[f.id], f, ws) }))
 }
 
 /**
@@ -115,14 +157,42 @@ function buildFields(obj, ws) {
  *   condition: { type:'condition', field, operator, value? } —— 单个条件（eq/ne/gt…），
  *     value 省略表示只「存在」判断（如 isNull/notNull）
  */
+
+/**
+ * 规范化条件值：
+ *   - 关联记录(29) 的 eq/ne 需传 rowId 数组（文档 7.2 示例 ["<targetid>"]）
+ *   - in/notin/between/concurrent 等运算符的值必须是数组
+ * 传入 ws 才能做字段类型判断；不传时仅做运算符层面的规范化，保持向后兼容。
+ */
+function conditionValue(value, operator, field, ws) {
+  if (value === undefined) return undefined
+  const isEmpty = value === '' || value == null
+  const f = ws && field ? fieldOf(ws, field) : null
+  if (f && f.type === RELATION && ['eq', 'ne'].indexOf(operator) >= 0) {
+    if (Array.isArray(value)) return value
+    return isEmpty ? [] : [String(value)]
+  }
+  if (ARRAY_OPERATORS.indexOf(operator) >= 0 && !Array.isArray(value)) {
+    return isEmpty ? [] : [value]
+  }
+  return value
+}
+
 function filterGroup(logic, children) {
   return { type: 'group', logic, children }
 }
 
-function filterCond(field, operator, value) {
+/**
+ * @param {string} field 字段别名
+ * @param {string} operator 运算符
+ * @param {*} value 条件值
+ * @param {string} [ws] 工作表别名 —— 传入后会按字段类型规范化取值
+ */
+function filterCond(field, operator, value, ws) {
   const cond = { type: 'condition', field, operator }
-  if (value !== undefined) cond.value = value
+  const v = conditionValue(value, operator, field, ws)
+  if (v !== undefined) cond.value = v
   return cond
 }
 
-module.exports = { flattenRow, flattenRows, buildFields, filterGroup, filterCond }
+module.exports = { flattenRow, flattenRows, buildFields, filterGroup, filterCond, fieldOf }

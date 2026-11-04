@@ -146,6 +146,8 @@
 .entry-grid {
   display: flex;
   flex-wrap: wrap;
+  /* 入口数量少于 4 个时（当前隐藏后仅 2 个）整行居中，满 4 列时无影响 */
+  justify-content: center;
 }
 .entry-item {
   width: 25%;

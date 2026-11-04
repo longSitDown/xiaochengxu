@@ -51,6 +51,7 @@ Page({
   },
 
   goQuiz() {
-    wx.switchTab({ url: '/pages/quiz/quiz' })
+    // quiz 不在 tabBar 中，必须用 navigateTo；switchTab 会以 fail:not tab 静默失败
+    wx.navigateTo({ url: '/pages/quiz/quiz' })
   }
 })

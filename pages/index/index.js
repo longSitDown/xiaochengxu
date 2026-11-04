@@ -1,29 +1,44 @@
 /**
- * 首页：红色 Hero 横幅 + 8 宫格功能入口 + 新闻资讯（分类筛选）
+ * 首页：红色 Hero 横幅 + 功能宫格入口 + 新闻资讯（分类筛选）
  * 数据来自 api/home 服务层，页面不感知数据来源（mock / 明道云）。
  */
 const homeApi = require('../../api/home')
 const exhibitionApi = require('../../api/exhibition')
-const userApi = require('../../api/user')
+const config = require('../../config/index')
 const { formatDate } = require('../../utils/format')
 const storage = require('../../utils/storage')
-const app = getApp()
+
+/**
+ * 功能入口全量清单（对应设计稿：参观须知/VR展览/展厅导览/AI讲解/文物赏析/祭扫烈士/红色地图/场馆活动）
+ * 实际渲染项由 config.HIDDEN_ENTRIES 过滤：隐藏只是不展示，数据保留，恢复时改配置即可。
+ */
+const ALL_ENTRIES = [
+  { name: '参观须知', icon: '/images/entry/entry-notice.png', url: '/pages/guide/guide' },
+  { name: 'VR展览', icon: '/images/entry/entry-vr.png', url: '/pages/panorama/panorama' },
+  { name: '展厅导览', icon: '/images/entry/entry-hall.png', url: '/pages/hall/hall' },
+  { name: 'AI讲解', icon: '/images/entry/entry-ai.png', url: '', tip: '请在展厅内选择展品收听讲解' },
+  { name: '文物赏析', icon: '/images/entry/entry-relic.png', url: '/pages/artifact/artifact' },
+  { name: '祭扫烈士', icon: '/images/entry/entry-mourn.png', url: '', tip: '功能建设中，敬请期待' },
+  { name: '红色地图', icon: '/images/entry/entry-map.png', url: '', tip: '功能建设中，敬请期待' },
+  { name: '场馆活动', icon: '/images/entry/entry-event.png', url: '/pages/news/news' },
+  // 知识竞赛：原入口在数字导览页（hall 已隐藏），移至首页保证答题功能可达
+  { name: '知识竞赛', icon: '/images/entry/entry-quiz.png', url: '/pages/quiz/quiz' }
+]
 
 Page({
   data: {
     statusBarHeight: 20, // 自定义导航栏：状态栏高度（hero 顶部留白）
     notices: [],        // 滚动公告条
     popupNotice: null,  // 弹窗公告
-    entries: [],        // 8 宫格功能入口
+    entries: [],        // 功能宫格入口（已按 HIDDEN_ENTRIES 过滤）
     intro: '',          // 纪念馆简介
-    honors: [],         // 荣誉资质列表
+    honors: [],         // 荣誉资质列表（是否展示由 config.BLOCKS.honors 控制）
+    showHonors: config.BLOCKS.honors, // 荣誉资质区块开关
     newsTabs: ['全部'], // 资讯分类 tabs（数据聚合后填充）
     newsTab: '全部',    // 当前选中分类
     newsList: [],       // 全量资讯（已装饰）
     showNews: [],       // 当前分类下展示的资讯
-    loading: true,
-
-    showAuth: false     // 授权登录弹窗
+    loading: true
   },
 
   onLoad() {
@@ -31,19 +46,8 @@ Page({
     const info = wx.getSystemInfoSync()
     this.setData({ statusBarHeight: info.statusBarHeight || 20 })
 
-    // 8 宫格入口（对应设计稿：参观须知/VR展览/展厅导览/AI讲解/文物赏析/祭扫烈士/红色地图/场馆活动）
-    this.setData({
-      entries: [
-        { name: '参观须知', icon: '/images/entry/entry-notice.png', url: '/pages/guide/guide' },
-        { name: 'VR展览', icon: '/images/entry/entry-vr.png', url: '/pages/panorama/panorama' },
-        { name: '展厅导览', icon: '/images/entry/entry-hall.png', url: '/pages/hall/hall' },
-        { name: 'AI讲解', icon: '/images/entry/entry-ai.png', url: '', tip: '请在展厅内选择展品收听讲解' },
-        { name: '文物赏析', icon: '/images/entry/entry-relic.png', url: '/pages/artifact/artifact' },
-        { name: '祭扫烈士', icon: '/images/entry/entry-mourn.png', url: '', tip: '功能建设中，敬请期待' },
-        { name: '红色地图', icon: '/images/entry/entry-map.png', url: '', tip: '功能建设中，敬请期待' },
-        { name: '场馆活动', icon: '/images/entry/entry-event.png', url: '/pages/news/news' }
-      ]
-    })
+    // 宫格入口：按 config.HIDDEN_ENTRIES 过滤（当前隐藏 VR展览/展厅导览/AI讲解/文物赏析/祭扫烈士/红色地图）
+    this.setData({ entries: this.visibleEntries() })
 
     // 纪念馆简介 + 荣誉资质（静态展示，后续可接入接口）
     this.setData({
@@ -51,8 +55,8 @@ Page({
       honors: ['全国爱国主义教育示范基地', '湖南省文物保护单位', '国家AAA级旅游景区', '湖南省红色旅游经典景区', '湖南省学雷锋活动示范点']
     })
 
-    // 未登录则弹出授权登录弹窗（登录后不再弹）
-    this.checkAuth()
+    // 首页不弹登录：资讯、展馆、指南等公开内容游客可直接浏览，
+    // 统一改为在写操作（预约/答题/反馈）时由 app.ensureLogin() 引导登录
     this.fetchAll()
   },
 
@@ -60,29 +64,10 @@ Page({
     this.fetchAll(() => wx.stopPullDownRefresh())
   },
 
-  /** 首次进入：无本地登录态则弹授权弹窗 */
-  checkAuth() {
-    if (!userApi.getUser()) {
-      this.setData({ showAuth: true })
-    }
-  },
-
-  /** 点击「微信授权登录」：走全局 doLogin，成功关闭弹窗 */
-  onAuthLogin() {
-    app
-      .doLogin()
-      .then(() => {
-        this.setData({ showAuth: false })
-        wx.showToast({ title: '登录成功', icon: 'success' })
-      })
-      .catch((e) => {
-        wx.showToast({ title: (e && e.message) || '登录失败', icon: 'none' })
-      })
-  },
-
-  /** 点击「暂不登录」：以游客身份关闭弹窗，本会话不再弹出 */
-  onAuthCancel() {
-    this.setData({ showAuth: false })
+  /** 按 config.HIDDEN_ENTRIES 过滤出实际渲染的宫格入口 */
+  visibleEntries() {
+    const hidden = config.HIDDEN_ENTRIES || []
+    return ALL_ENTRIES.filter((e) => hidden.indexOf(e.name) < 0)
   },
 
   /** 并行拉取首页数据：公告 + 资讯 + 展区（AI 讲解入口用） */
@@ -107,11 +92,14 @@ Page({
           loading: false
         })
         // AI 讲解入口：进入第一个展区的展品讲解列表
+        // 该入口可能被 config.HIDDEN_ENTRIES 隐藏，findIndex 返回 -1 时跳过，避免写入无效的 entries[-1]
         if (exhibitions && exhibitions.length) {
           const idx = this.data.entries.findIndex((e) => e.name === 'AI讲解')
-          this.setData({
-            ['entries[' + idx + '].url']: '/pages/hall-detail/hall-detail?id=' + exhibitions[0].id
-          })
+          if (idx >= 0) {
+            this.setData({
+              ['entries[' + idx + '].url']: '/pages/hall-detail/hall-detail?id=' + exhibitions[0].id
+            })
+          }
         }
         this.checkPopupNotice(notices)
         done && done()
@@ -169,7 +157,9 @@ Page({
       wx.showToast({ title: entry.tip || '功能建设中', icon: 'none' })
       return
     }
-    const tabPages = ['/pages/index/index', '/pages/hall/hall', '/pages/reservation/reservation', '/pages/profile/profile']
+    // 仅这些页面在 tabBar 中，需 switchTab；其余一律 navigateTo
+    // 注意：hall 已从 tabBar 移除，故不在本数组内（否则 switchTab 会失败）
+    const tabPages = ['/pages/index/index', '/pages/reservation/reservation', '/pages/profile/profile']
     if (tabPages.indexOf(entry.url) >= 0) {
       wx.switchTab({ url: entry.url })
     } else {

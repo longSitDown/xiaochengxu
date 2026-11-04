@@ -3,11 +3,14 @@
   <!-- 用户信息 -->
   <view class="user-hero">
     <block wx:if="{{user}}">
-      <image class="user-avatar" src="{{user.avatar}}" mode="aspectFill" />
+      <!-- 头像：官方"头像昵称填写能力"，用户主动点击选择（wx.getUserProfile 已废弃） -->
+      <button class="user-avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image class="user-avatar" src="{{user.avatar}}" mode="aspectFill" />
+      </button>
       <view class="user-info">
-        <view class="user-name" bindtap="onEditNickname">
+        <view class="user-name" bindtap="onOpenEditor">
           {{user.nickname}}
-          <text class="user-edit">修改</text>
+          <text class="user-edit">编辑资料</text>
         </view>
         <view class="user-phone">{{user.phone || '未绑定手机号'}}</view>
       </view>
@@ -16,9 +19,9 @@
       <image class="user-avatar" src="/images/placeholder.png" mode="aspectFill" />
       <view class="user-info">
         <view class="user-name">游客用户</view>
-        <view class="user-phone">登录后可使用预约、答题等功能</view>
+        <view class="user-phone">登录后可预约、答题、查看历史记录</view>
       </view>
-      <view class="user-login-btn" bindtap="onLogin">一键登录</view>
+      <view class="user-login-btn" bindtap="onLogin">微信登录</view>
     </block>
   </view>
 
@@ -57,6 +60,44 @@
       </view>
     </view>
 
+    <!-- 退出登录：仅登录态可见，二次确认后清本地 token 与用户态 -->
+    <view class="card logout-card" wx:if="{{user}}">
+      <view class="logout-btn" hover-class="logout-btn-hover" bindtap="onLogout">退出登录</view>
+    </view>
+
     <view class="profile-copyright">红色纪念馆 · 传承红色基因</view>
+  </view>
+
+  <!-- 资料编辑面板：头像用 chooseAvatar，昵称用 type="nickname"（可一键填入微信昵称） -->
+  <view class="edit-mask" wx:if="{{editing}}" catchtouchmove="noop" bindtap="onCloseEditor"></view>
+  <view class="edit-panel" wx:if="{{editing}}" catchtap="noop">
+    <view class="edit-title">完善个人资料</view>
+
+    <view class="edit-row">
+      <text class="edit-label">头像</text>
+      <button class="edit-avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image class="edit-avatar" src="{{draft.avatar || '/images/placeholder.png'}}" mode="aspectFill" />
+        <text class="edit-hint">{{uploading ? '上传中…' : '点击更换'}}</text>
+      </button>
+    </view>
+
+    <view class="edit-row">
+      <text class="edit-label">昵称</text>
+      <input
+        class="edit-input"
+        type="nickname"
+        value="{{draft.nickname}}"
+        placeholder="点击使用微信昵称"
+        placeholder-class="edit-placeholder"
+        maxlength="20"
+        bindinput="onNicknameInput"
+        bindblur="onNicknameInput"
+      />
+    </view>
+
+    <view class="edit-actions">
+      <view class="btn edit-btn-plain" bindtap="onCloseEditor">取消</view>
+      <view class="btn btn-primary edit-btn-save" bindtap="onSaveProfile">{{saving ? '保存中…' : '保存'}}</view>
+    </view>
   </view>
 </view>

@@ -28,6 +28,25 @@ function formatDate(input, fmt = 'yyyy-MM-dd') {
 }
 
 /**
+ * 归一化为明道云 Date(15) 字段要求的 'YYYY-MM-DD'
+ * 兼容：Date 对象、ISO 串（2026-10-28T08:34:58.000Z）、本地串、时间戳
+ */
+function toMysqlDate(input) {
+  const s = formatDate(input, 'yyyy-MM-dd')
+  return s || ''
+}
+
+/**
+ * 归一化为明道云 DateTime(16) 字段要求的 'YYYY-MM-DD HH:mm:ss'
+ * 注意：不能用 toISOString()——带 T 与 Z 的格式会被明道云判为非法值，
+ * 且 Z 表示 UTC，直接取会出现 8 小时时区偏移。
+ */
+function toMysqlDatetime(input) {
+  const s = formatDate(input, 'yyyy-MM-dd HH:mm:ss')
+  return s || ''
+}
+
+/**
  * 相对时间：刚刚 / n分钟前 / n小时前 / n天前 / 具体日期
  */
 function fromNow(input) {
@@ -109,6 +128,8 @@ function safeParse(str, fallback) {
 module.exports = {
   pad,
   formatDate,
+  toMysqlDate,
+  toMysqlDatetime,
   fromNow,
   formatDuration,
   formatNumber,

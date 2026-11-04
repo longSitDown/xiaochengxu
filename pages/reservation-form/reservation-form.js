@@ -1,16 +1,24 @@
 /**
- * 预约表单：日期/时段（余量实时展示）+ 个人/团体 + 实名参观人 + 联系方式校验
+ * 预约表单：日期/时段（余量实时展示）+ 实名参观人 + 联系方式校验
+ *
+ * 类型说明：
+ *   - 新建预约固定为「个人」，不提供类型切换，也不接受 ?type=团体 参数
+ *   - 「团体」字段与校验逻辑保留，仅供改期历史团体订单使用（loadForReschedule 恢复 type）
+ *   - 个人预约：多选实名参观人，人数 = 已选人数，上限 5
+ *
  * 支持「改期模式」：URL 带 reschedule=<预约id> 时仅修改日期/时段/人数
  *
  * 实名规则：
  *   - 个人预约：参观人从「预约人」名单中选取（1-5 人，每人已登记身份证），
  *     联系人自动取第一位参观人
  *   - 团体预约：联系人（带队负责人）须填写身份证，可从预约人中一键选取
+ *     （仅改期历史团体订单时生效，新建预约无此入口）
  */
 const reservationApi = require('../../api/reservation')
 const visitorApi = require('../../api/visitor')
 const userApi = require('../../api/user')
 const { formatDate, maskIdCard, validateIdCard } = require('../../utils/format')
+const app = getApp()
 
 // 个人预约单次最多选取的参观人数
 const PERSON_MAX = 5
@@ -50,10 +58,8 @@ Page({
   onLoad(options) {
     const user = userApi.getUser()
     this.setData({ userId: user ? user.id : '' })
-    // 预约页入口预设类型（个人/团体）
-    if (options.type === '团体') {
-      this.setData({ type: '团体', visitorCount: 20 })
-    }
+    // 新建预约固定为「个人」，不再接受 ?type=团体 预设（旧链接传入时静默忽略）；
+    // 团体类型只在改期历史团体订单时由 loadForReschedule 恢复
     if (options.reschedule) {
       this.rescheduleId = options.reschedule
       this.setData({ isReschedule: true })
@@ -281,21 +287,6 @@ Page({
     this.setData({ timeSlot: slot })
   },
 
-  onTypeTap(e) {
-    const type = e.currentTarget.dataset.type
-    if (type === this.data.type) return
-    // 个人 ↔ 团体：人数回落；已有参观人时联系人预填第一位
-    const first = this.data.selectedVisitors[0]
-    const isPerson = type === '个人'
-    this.setData({
-      type,
-      visitorCount: isPerson ? Math.max(1, this.data.selectedVisitors.length) : 20,
-      contactName: first ? first.name : this.data.contactName,
-      contactPhone: first ? first.phone : this.data.contactPhone,
-      contactIdCard: first ? first.idCard : this.data.contactIdCard
-    })
-  },
-
   onCountMinus() {
     const { visitorCount, type } = this.data
     const min = type === '团体' ? 10 : 1
@@ -504,10 +495,25 @@ Page({
       wx.showToast({ title: msg, icon: 'none' })
       return
     }
+    this.setData({ submitting: true })
+    // 写操作前置：确保有登录身份（未登录会先走一次微信登录，失败则中止提交）
+    app
+      .ensureLogin()
+      .then((user) => this.doSubmit(user))
+      .catch((e) => {
+        this.setData({ submitting: false })
+        wx.showModal({
+          title: '需要登录',
+          content: (e && e.message) || '登录后才能提交预约',
+          showCancel: false
+        })
+      })
+  },
+
+  /** 实际提交（调用前已确保登录态） */
+  doSubmit(user) {
     const { visitDate, timeSlot, type, visitorCount, organization, contactName,
       contactPhone, contactIdCard, remark, selectedVisitors, isReschedule } = this.data
-    const user = userApi.getUser()
-    this.setData({ submitting: true })
 
     let req
     if (isReschedule) {
@@ -545,7 +551,7 @@ Page({
       })
     }
 
-    req
+    return req
       .then((resv) => {
         wx.showToast({ title: isReschedule ? '改期成功' : '预约成功', icon: 'success' })
         // redirectTo：返回键直接回到预约列表（延时等 toast 展示完）

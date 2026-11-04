@@ -8,6 +8,7 @@
 const quizApi = require('../../api/quiz')
 const userApi = require('../../api/user')
 const { formatDuration } = require('../../utils/format')
+const app = getApp()
 
 /** 提取选项 key：有 "A. " 前缀取字母，否则取全文（判断题） */
 function optionKey(text) {
@@ -202,24 +203,32 @@ Page({
     const durationUsed = Math.max(1, this.totalSec - Math.max(0, this.remainSec))
 
     const user = userApi.getUser()
-    quizApi
-      .submitQuizRecord({
-        userId: user ? user.id : '匿名',
-        activityId: activity.id,
-        activityTitle: activity.title,
-        score,
-        correctCount,
-        totalCount: questions.length,
-        durationUsed,
-        answers
-      })
+    // 交卷前确保登录：成绩已在内存里，登录失败只会提示重试，不会丢数据
+    app
+      .ensureLogin()
+      .then((me) =>
+        quizApi.submitQuizRecord({
+          userId: me.id || (user && user.id) || '匿名',
+          activityId: activity.id,
+          activityTitle: activity.title,
+          score,
+          correctCount,
+          totalCount: questions.length,
+          durationUsed,
+          answers
+        })
+      )
       .then((record) => {
         // redirect：避免返回键再次进入答题页
         wx.redirectTo({ url: '/pages/quiz-result/quiz-result?id=' + record.id })
       })
       .catch((e) => {
         this.setData({ submitting: false })
-        wx.showToast({ title: (e && e.message) || '提交失败', icon: 'none' })
+        wx.showModal({
+          title: '提交失败',
+          content: (e && e.message) || '答题记录提交失败，请检查网络后重试',
+          showCancel: false
+        })
       })
   },
 

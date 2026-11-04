@@ -436,11 +436,27 @@ def draw_entry_event():
     return img
 
 
+def draw_entry_quiz():
+    """知识竞赛：答题卡 + 对勾"""
+    img, d = _entry_base((252, 238, 232, 255))
+    c = (200, 16, 46, 255)
+    d.rounded_rectangle([34, 26, 110, 118], radius=10, fill=(255, 255, 255, 255), outline=c, width=4)  # 答题卡
+    d.line([(46, 44), (98, 44)], fill=(226, 196, 168, 255), width=5)             # 题干
+    d.line([(46, 56), (80, 56)], fill=(226, 196, 168, 255), width=5)
+    d.ellipse([46, 72, 62, 88], outline=c, width=4)                              # 选项一（未选）
+    d.ellipse([46, 96, 62, 112], fill=c)                                         # 选项二（已选，实心更易辨识）
+    d.line([(49, 104), (52, 108)], fill=(255, 255, 255, 255), width=3)           # 白色对勾左笔
+    d.line([(52, 108), (59, 99)], fill=(255, 255, 255, 255), width=3)            # 白色对勾右笔
+    d.line([(70, 80), (98, 80)], fill=(226, 196, 168, 255), width=5)
+    d.line([(70, 104), (98, 104)], fill=(226, 196, 168, 255), width=5)
+    return img
+
+
 def gen_entry_icons():
     icons = {
         'notice': draw_entry_notice, 'vr': draw_entry_vr, 'hall': draw_entry_hall,
         'ai': draw_entry_ai, 'relic': draw_entry_relic, 'mourn': draw_entry_mourn,
-        'map': draw_entry_map, 'event': draw_entry_event
+        'map': draw_entry_map, 'event': draw_entry_event, 'quiz': draw_entry_quiz
     }
     out = os.path.join(IMG, 'entry')
     os.makedirs(out, exist_ok=True)

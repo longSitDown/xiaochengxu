@@ -2,7 +2,5 @@
   "navigationStyle": "custom",
   "enablePullDownRefresh": true,
   "backgroundTextStyle": "dark",
-  "usingComponents": {
-    "authorize-popup": "/components/authorize-popup/authorize-popup"
-  }
+  "usingComponents": {}
 }

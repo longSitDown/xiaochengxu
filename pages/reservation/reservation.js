@@ -3,6 +3,7 @@
  */
 const reservationApi = require('../../api/reservation')
 const userApi = require('../../api/user')
+const config = require('../../config/index')
 const { formatDate } = require('../../utils/format')
 
 const TABS = ['全部', '待审核', '已通过', '已驳回', '已取消', '已核销']
@@ -21,7 +22,9 @@ Page({
     tabs: TABS,
     activeTab: '全部',
     list: [],
-    loading: true
+    loading: true,
+    // 「团体预约」入口卡片开关（当前已下线）；表单页仅在改期历史团体订单时使用团体字段
+    showGroup: config.BLOCKS.groupReservation
   },
 
   onLoad() {
@@ -88,9 +91,8 @@ Page({
     wx.navigateTo({ url: '/pages/reservation-detail/reservation-detail?id=' + e.currentTarget.dataset.id })
   },
 
-  goCreate(e) {
-    // 入口卡片带类型（个人/团体）预设，悬浮按钮默认个人
-    const type = (e && e.currentTarget && e.currentTarget.dataset.type) || '个人'
-    wx.navigateTo({ url: '/pages/reservation-form/reservation-form?type=' + type })
+  goCreate() {
+    // 团体预约已下线：统一进入个人预约表单，不再携带 type 参数
+    wx.navigateTo({ url: '/pages/reservation-form/reservation-form' })
   }
 })

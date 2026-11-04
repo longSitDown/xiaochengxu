@@ -34,7 +34,7 @@
     </view>
   </view>
 
-  <!-- 功能 8 宫格（2 行 4 列，彩色图标） -->
+  <!-- 功能宫格（4 列，数量由 config.HIDDEN_ENTRIES 控制，不足 4 个时居中） -->
   <view class="entry-card">
     <view class="entry-grid">
       <view class="entry-item" wx:for="{{entries}}" wx:key="name"
@@ -54,8 +54,8 @@
     <view class="intro-text">{{intro}}</view>
   </view>
 
-  <!-- 荣誉资质：横向滚动徽章列表 -->
-  <view class="honor-card">
+  <!-- 荣誉资质：横向滚动徽章列表（区块开关 config.BLOCKS.honors） -->
+  <view class="honor-card" wx:if="{{showHonors}}">
     <view class="intro-head">
       <view class="intro-bar"></view>
       <text class="intro-title">荣誉资质</text>
@@ -118,5 +118,3 @@
   </view>
 </view>
 
-<!-- 授权登录弹窗：未登录冷启动弹出 -->
-<authorize-popup show="{{showAuth}}" bind:login="onAuthLogin" bind:cancel="onAuthCancel" />

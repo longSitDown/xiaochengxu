@@ -9,7 +9,7 @@
  */
 const { request } = require('./request')
 const { flattenRows, flattenRow, buildFields, filterGroup, filterCond } = require('./adapters')
-const { safeParse } = require('../utils/format')
+const { safeParse, toMysqlDatetime } = require('../utils/format')
 
 const WS = {
   reservations: 'reservations',
@@ -132,7 +132,8 @@ function createReservation(data) {
               status: '待审核',
               rejectReason: '',
               qrCode: '',
-              createTime: new Date().toISOString()
+              // 明道云 DateTime(16) 要求 'YYYY-MM-DD HH:mm:ss'，不可用 toISOString()
+              createTime: toMysqlDatetime(new Date())
             }),
             WS.reservations
           ),

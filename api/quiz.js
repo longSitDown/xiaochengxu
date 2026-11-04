@@ -3,7 +3,7 @@
  */
 const { request } = require('./request')
 const { flattenRows, flattenRow, buildFields, filterGroup, filterCond } = require('./adapters')
-const { safeParse } = require('../utils/format')
+const { safeParse, toMysqlDatetime } = require('../utils/format')
 
 const WS = {
   activities: 'quizActivities',
@@ -30,8 +30,9 @@ function getActivityDetail(id) {
 
 /** 某活动的题目列表（options 为 JSON 字符串，解析为数组） */
 function getQuestions(activityId) {
+  // activityId 为关联记录(29)字段，传 ws 让适配器自动把值包成 rowId 数组
   const filters = activityId
-    ? filterGroup('AND', [filterCond('activityId', 'eq', activityId)])
+    ? filterGroup('AND', [filterCond('activityId', 'eq', activityId, WS.questions)])
     : undefined
   return request({
     url: '/v3/app/worksheets/' + WS.questions + '/rows/list',
@@ -73,7 +74,8 @@ function submitQuizRecord(record) {
       fields: buildFields(
         Object.assign({}, record, {
           answers: JSON.stringify(record.answers || []),
-          createTime: new Date().toISOString()
+          // 明道云 DateTime(16) 要求 'YYYY-MM-DD HH:mm:ss'，不可用 toISOString()
+          createTime: toMysqlDatetime(new Date())
         }),
         WS.records
       ),
@@ -119,7 +121,8 @@ function getMyRecords(userId) {
  */
 function getRanking(activityId) {
   const conds = []
-  if (activityId) conds.push(filterCond('activityId', 'eq', activityId))
+  // activityId 为关联记录(29)字段，传 ws 让适配器按 rowId 数组规范化
+  if (activityId) conds.push(filterCond('activityId', 'eq', activityId, WS.records))
   return request({
     url: '/v3/app/worksheets/' + WS.records + '/rows/list',
     method: 'POST',

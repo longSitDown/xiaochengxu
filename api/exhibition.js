@@ -51,8 +51,9 @@ function countArtifacts() {
 
 /** 某展区的展品列表（重点展品优先，浏览量降序） */
 function getArtifactsByExhibition(exhibitionId) {
+  // 传 WS.artifacts 让适配器识别 exhibitionId 为关联记录(29)字段，自动把值包成 rowId 数组
   const filters = exhibitionId
-    ? filterGroup('AND', [filterCond('exhibitionId', 'eq', exhibitionId)])
+    ? filterGroup('AND', [filterCond('exhibitionId', 'eq', exhibitionId, WS.artifacts)])
     : undefined
   return request({
     url: '/v3/app/worksheets/' + WS.artifacts + '/rows/list',
