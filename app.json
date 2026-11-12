@@ -21,7 +21,9 @@
     "pages/feedback-detail/feedback-detail",
     "pages/news/news",
     "pages/news-detail/news-detail",
-    "pages/about/about"
+    "pages/about/about",
+    "pages/login/login",
+    "pages/agreement/agreement"
   ],
   "window": {
     "navigationBarBackgroundColor": "#F5EFE2",

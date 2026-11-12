@@ -1,6 +1,10 @@
 /**
  * 意见反馈：提交反馈（文字 + 图片 + 联系方式）/ 我的反馈列表 双 Tab
- * 图片为本地演示（wx.chooseMedia 临时文件），真实环境切换为附件上传后取 URL
+ *
+ * 双通道（契约 v1.9.14）：
+ *   - 本地演示：写 feedbacks 工作表，图片为 wx.chooseMedia 临时文件；
+ *   - 真实场馆：走 API-08，只接受 Title/Description，不返回记录 ID、不支持图片，
+ *     因此提交成功后留在提交页（「我的反馈」读不到该记录）。
  */
 const feedbackApi = require('../../api/feedback')
 const userApi = require('../../api/user')
@@ -22,7 +26,8 @@ Page({
     contact: '',
     submitting: false,
     myList: [],
-    mineLoading: false
+    mineLoading: false,
+    tipText: '提交后可在「我的反馈」中查看处理进度与官方回复'
   },
 
   onLoad(options) {
@@ -98,19 +103,32 @@ Page({
     // 写操作前置：确保有登录身份，提交内容已填好，登录失败不影响已输入内容
     app
       .ensureLogin()
-      .then((me) =>
+      .then(() =>
         feedbackApi.createFeedback({
-          userId: me.id || (user && user.id) || '匿名',
+          userId: userApi.getBizId() || '匿名',
+          // API-08 需要游客档案 GUID；与 mock 业务关联键 bizId 是两个 ID，不可混用
+          venueUserId: userApi.getUserId(),
           content: content.trim(),
           images: this.data.images,
           contact: contact.trim()
         })
       )
-      .then(() => {
-        wx.showToast({ title: '提交成功', icon: 'success' })
-        this.setData({ content: '', images: [], submitting: false, tab: 'mine' })
-        this.myLoaded = false
-        this.fetchMine()
+      .then((res) => {
+        const viaVenue = !!(res && res.viaVenue)
+        wx.showToast({ title: viaVenue ? '已提交至场馆' : '提交成功', icon: 'success' })
+        this.setData({
+          content: '', images: [], submitting: false,
+          tab: viaVenue ? 'create' : 'mine',
+          tipText: viaVenue
+            ? '反馈已提交至场馆系统；场馆侧暂不支持图片与在线进度查询，如有疑问请联系场馆'
+            : '提交后可在「我的反馈」中查看处理进度与官方回复'
+        })
+        // 场馆系统（API-08）不返回反馈记录 ID，「我的反馈」读的是本地工作表，
+        // 跳过去只会看到空列表；留在提交页由底下的提示说明进度查询方式。
+        if (!viaVenue) {
+          this.myLoaded = false
+          this.fetchMine()
+        }
       })
       .catch((e) => {
         this.setData({ submitting: false })
@@ -128,7 +146,7 @@ Page({
     }
     this.setData({ mineLoading: true })
     feedbackApi
-      .getMyFeedbacks(user.id)
+      .getMyFeedbacks(userApi.getBizId())
       .then((list) => {
         this.myLoaded = true
         this.setData({

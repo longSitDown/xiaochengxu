@@ -11,7 +11,8 @@
     <swiper class="notice-swiper" vertical autoplay circular interval="4000" disable-touch>
       <swiper-item><view class="notice-text text-ellipsis">入场须出示与预约登记一致的身份证原件</view></swiper-item>
       <swiper-item><view class="notice-text text-ellipsis">周一闭馆，法定节假日开放安排以公告为准</view></swiper-item>
-      <swiper-item><view class="notice-text text-ellipsis">个人预约每单限 5 人，请如实填写参观人信息</view></swiper-item>
+      <swiper-item wx:if="{{!realMode}}"><view class="notice-text text-ellipsis">个人预约每单限 5 人，请如实填写参观人信息</view></swiper-item>
+      <swiper-item wx:else><view class="notice-text text-ellipsis">该场馆按日期放号，名额先约先得</view></swiper-item>
     </swiper>
   </view>
 
@@ -44,8 +45,8 @@
       </view>
     </view>
 
-    <!-- 参观场次：仅展示选中日期的时段 -->
-    <view class="card">
+    <!-- 参观场次：仅展示选中日期的时段（真实场馆按日期放号，无场次，改为显示余量） -->
+    <view class="card" wx:if="{{hasSlots}}">
       <view class="block-title">
         <view class="block-bar"></view>
         <text>参观场次</text>
@@ -62,6 +63,21 @@
         </view>
       </block>
       <view wx:if="{{!visitDate}}" class="slot-empty">请先在日历中选择参观日期</view>
+    </view>
+
+    <view class="card" wx:else>
+      <view class="block-title">
+        <view class="block-bar"></view>
+        <text>预约名额</text>
+      </view>
+      <view class="slot-row" wx:if="{{visitDate}}">
+        <view class="slot-item slot-active">
+          <view class="slot-name">{{visitDate}}</view>
+          <view class="slot-quota">{{remainText}}</view>
+        </view>
+      </view>
+      <view wx:else class="slot-empty">请先在日历中选择参观日期</view>
+      <view class="form-tip">该场馆按日期放号，名额先约先得。</view>
     </view>
 
     <!-- 改期模式：人数可调整 -->
@@ -165,10 +181,10 @@
 <view class="bottom-bar safe-bottom">
   <view class="bottom-info" wx:if="{{step === 1}}">
     <view class="bottom-date">{{visitDate || '请选择参观日期'}}</view>
-    <view class="bottom-slot">{{timeSlot || '请选择参观场次'}}</view>
+    <view class="bottom-slot">{{hasSlots ? (timeSlot || '请选择参观场次') : remainText}}</view>
   </view>
   <view class="bottom-back" wx:if="{{step === 2}}" bindtap="onPrevStep">上一步</view>
-  <view class="bottom-btn {{(step === 1 && (!visitDate || !timeSlot)) || submitting ? 'bottom-btn-disabled' : ''}}" bindtap="onBottomTap">
+  <view class="bottom-btn {{(step === 1 && (!visitDate || (hasSlots && !timeSlot))) || submitting ? 'bottom-btn-disabled' : ''}}" bindtap="onBottomTap">
     {{isReschedule ? '确认改期' : (step === 1 ? '下一步' : (submitting ? '提交中…' : '提交预约'))}}
   </view>
 </view>

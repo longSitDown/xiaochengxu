@@ -59,6 +59,7 @@
 }
 .hero-search {
   flex: 1;
+  min-width: 0; /* 右侧给胶囊留白后允许收缩，避免溢出 */
   display: flex;
   align-items: center;
   height: 68rpx;
@@ -75,6 +76,11 @@
   line-height: 1;
 }
 .hero-search-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   color: rgba(255, 255, 255, 0.75);
   font-size: 26rpx;
 }
@@ -387,4 +393,55 @@
 }
 .popup-btn {
   width: 100%;
+}
+
+/* ---- 场馆主页信息（API-02 真实数据；无数据时整块不渲染） ---- */
+.venue-status {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 4rpx 18rpx;
+  border-radius: 20rpx;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 22rpx;
+}
+.venue-status-closed {
+  background: #FDECEC;
+  color: var(--danger);
+}
+.venue-photos {
+  width: 100%;
+  height: 280rpx;
+  margin-top: 20rpx;
+  border-radius: 14rpx;
+  overflow: hidden;
+}
+.venue-photo {
+  width: 100%;
+  height: 280rpx;
+  border-radius: 14rpx;
+}
+.venue-meta {
+  margin-top: 20rpx;
+  padding-top: 12rpx;
+  border-top: 1rpx solid var(--line);
+}
+.venue-meta-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 8rpx 0;
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+.venue-meta-label {
+  flex-shrink: 0;
+  width: 140rpx;
+  color: var(--text-light);
+}
+.venue-meta-value {
+  flex: 1;
+  color: var(--text-sub);
+}
+.venue-meta-link {
+  color: var(--primary);
 }

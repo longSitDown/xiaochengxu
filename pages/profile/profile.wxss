@@ -297,6 +297,27 @@
 .edit-placeholder {
   color: var(--text-light);
 }
+/* 微信验证过的手机号：只读展示，弱化到与说明文字同层级 */
+.edit-readonly {
+  color: var(--text-sub);
+}
+.edit-verified {
+  flex-shrink: 0;
+  margin-left: 12rpx;
+  padding: 2rpx 12rpx;
+  border-radius: 16rpx;
+  font-size: 20rpx;
+  line-height: 1.7;
+  color: var(--success);
+  background: rgba(46, 158, 91, 0.1);
+}
+/* 手机号用途说明：隐私告知，避免用户误以为会自动同步到微信/后台 */
+.edit-tip {
+  margin-top: 16rpx;
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: var(--text-light);
+}
 .edit-actions {
   display: flex;
   margin-top: 40rpx;

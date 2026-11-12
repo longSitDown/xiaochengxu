@@ -41,18 +41,23 @@ Page({
     // 场景缩略图
     sceneThumbs: [],
     // 状态栏高度（自定义导航栏适配）
-    statusBarHeight: 20
+    statusBarHeight: 20,
+    menuReserve: 100 // 右侧为微信胶囊预留的宽度（px）
   },
 
   onLoad(options) {
     this.exhibitionId = options.exhibitionId || ''
     const info = wx.getSystemInfoSync()
+    // 微信胶囊是系统浮层、不占文档流，顶栏右侧需按实际位置留白
+    const navApp = getApp()
+    const nav = (navApp && navApp.getNavMetrics && navApp.getNavMetrics()) || {}
     const viewportW = info.windowWidth
     const viewportH = Math.round(viewportW * 4 / 3) // 全景区高度按 4:3
     this.maxOffset = 0
     this.minOffset = viewportW - viewportW * IMG_SCALE // 负值
     this.setData({
       statusBarHeight: info.statusBarHeight || 20,
+      menuReserve: typeof nav.menuReserve === 'number' ? nav.menuReserve : 100,
       viewportW,
       viewportH,
       imgW: Math.round(viewportW * IMG_SCALE)

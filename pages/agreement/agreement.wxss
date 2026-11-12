@@ -1,0 +1,58 @@
+/**
+ * 协议文档页样式：长文阅读优先，行高放宽、段落留白
+ */
+.doc-page {
+  min-height: 100vh;
+  padding: 40rpx 44rpx calc(60rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.doc-head {
+  padding-bottom: 28rpx;
+  border-bottom: 2rpx solid var(--line);
+}
+
+.doc-title {
+  font-size: 38rpx;
+  font-weight: 700;
+  color: var(--primary-dark);
+  letter-spacing: 2rpx;
+}
+
+.doc-meta {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: var(--text-light);
+}
+
+.doc-body {
+  margin-top: 8rpx;
+}
+
+.doc-section {
+  margin-top: 36rpx;
+}
+
+.doc-h {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.doc-p {
+  margin-top: 12rpx;
+  font-size: 27rpx;
+  line-height: 1.85;
+  color: #55504a;
+  text-align: justify;
+}
+
+.doc-foot {
+  margin-top: 56rpx;
+  padding-top: 24rpx;
+  border-top: 2rpx solid var(--line);
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--text-light);
+  letter-spacing: 2rpx;
+}

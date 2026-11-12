@@ -20,7 +20,7 @@ Page({
 
   onShow() {
     const user = userApi.getUser()
-    this.setData({ hasUser: !!user, userId: user ? user.id : '' })
+    this.setData({ hasUser: !!user, userId: user ? userApi.getBizId() : '' })
     if (user) {
       this.fetchList()
     } else {

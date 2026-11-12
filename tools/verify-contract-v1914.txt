@@ -1,0 +1,92 @@
+博物馆预约管理系统 数据接口文档 v1.9.14 — 在线契约核验
+时间：2026/11/12 09:48:18
+场馆编号：220261105083
+说明：全部为空参数探测，平台层必填校验拦截，不写库。
+
+===== 一、端点必填键名（线上实际 vs 文档声明） =====
+探针：只传 Code（API-10 另传 NickName），平台层回「[缺失键] 参数缺少必填项」。
+
+[差异] API-05 场馆预约提交  HTTP 200
+  文档声明全量入参：Code, Token, UserId, ReservateDateId, Visitors
+  本次已提供：Code
+  预期缺失键：Token, UserId, ReservateDateId, Visitors
+  线上实际缺失键：（无必填键提示）
+  原始 msg：流程已终止
+  ⚠ 文档有、线上未要求：Token, UserId, ReservateDateId, Visitors
+
+[一致] API-06 微信登录  HTTP 200
+  文档声明全量入参：Code, JsCode, IsPhone
+  本次已提供：Code
+  预期缺失键：JsCode, IsPhone
+  线上实际缺失键：JsCode, IsPhone
+  原始 msg：[JsCode, IsPhone] 参数缺少必填项
+
+[一致] API-08 提交反馈  HTTP 200
+  文档声明全量入参：Code, Token, UserId, Title, Description
+  本次已提供：Code
+  预期缺失键：Token, UserId, Title, Description
+  线上实际缺失键：Title, Description, UserId, Token
+  原始 msg：[Title, Description, UserId, Token] 参数缺少必填项
+
+[一致] API-09 取消预约  HTTP 200
+  文档声明全量入参：Code, Token, UserId, ReservationId
+  本次已提供：Code
+  预期缺失键：Token, UserId, ReservationId
+  线上实际缺失键：ReservationId, UserId, Token
+  原始 msg：[ReservationId, UserId, Token] 参数缺少必填项
+
+[一致] API-10 更新用户信息  HTTP 200
+  文档声明全量入参：Code, Token, UserId, NickName, Avatar
+  本次已提供：Code, NickName
+  预期缺失键：Token, UserId, Avatar
+  线上实际缺失键：Avatar, UserId, Token
+  原始 msg：[Avatar, UserId, Token] 参数缺少必填项
+
+[差异] API-11 个人信息与预约列表  HTTP 200
+  文档声明全量入参：Code, Token, UserId
+  本次已提供：Code
+  预期缺失键：Token, UserId
+  线上实际缺失键：（无必填键提示）
+  原始 msg：
+  ⚠ 文档有、线上未要求：Token, UserId
+
+[一致] API-12 核销预约  HTTP 200
+  文档声明全量入参：Code, Token, UserId, ReservationId
+  本次已提供：Code
+  预期缺失键：Token, UserId, ReservationId
+  线上实际缺失键：ReservationId, UserId, Token
+  原始 msg：[ReservationId, UserId, Token] 参数缺少必填项
+
+===== 二、API-09 GET / POST 协议对比（伪参数，不产生业务变更） =====
+  GET  → HTTP 200  {"code":"20001","msg":"token 格式错误"}
+  POST → HTTP 200  {"code":"20001","msg":"token 格式错误"}
+
+===== 三、API-01 → API-02 真实链路（字段核对） =====
+  API-01：HTTP 200，code=，expired=7200，token=已签发
+  API-02：HTTP 200，code=，msg=
+  MuseumInfo 字段：Code, Name, Status, BusinessHours, Location, Type, Photos, Introduction, Address, ContactPhone, ContactMobile
+  NeedVerify 是否返回：否（缺省 false）
+  Status 实际值："开放"
+  ExhibitionAreaList 条数：7，首项字段：ID, Code, Name, Location, Photos
+  ReservationDateList 条数：7
+  ReservationDateList 全量字段：ID, Date, DailyQuota, DailyUsed, CanReserve
+  是否仍含时段字段 SessionId/SessionName：否（与 v1.9.13 去时段一致）
+  首项样本：{"ID":"0b86f906-2823-4e59-859e-d77faad364b1","Date":"2026-11-17 00:00:00","DailyQuota":1000,"DailyUsed":1,"CanReserve":1}
+
+===== 四、API-11 响应结构（伪 UserId，观察状态字段类型） =====
+  HTTP 200  
+
+===== 五、负向响应实测（用于校准回归断言） =====
+  API-03 伪 ExhbitAreaId：HTTP 200  
+  API-03 错键 AreaId   ：HTTP 200  {"status":2,"msg":"[ExhbitAreaId] 参数缺少必填项"}
+  API-04 伪 ExhibitId  ：HTTP 200  
+  API-06 非法 JsCode    ：HTTP 200  
+  API-05 缺 Visitors    ：HTTP 200  {"code":"90020","msg":"用户不存在","data":{"reservationId":"","reservationCode":""}}
+
+===== 六、核验结论（供代码改动决策） =====
+  · 端点键名以「一」为准；文档与线上不一致处需在前端做兼容而不是二选一。
+  · API-09 协议以「二」为准；若 GET/POST 均可，按文档统一为 GET。
+  · v1.9.13 去时段以「三」为准；若线上仍回时段字段，前端保留聚合兼容层。
+  · 负向响应以「五」为准；线上波动导致的空 body / 超时需纳入回归容错。
+
+报告生成完毕。

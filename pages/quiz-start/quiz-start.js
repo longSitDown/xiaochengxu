@@ -206,9 +206,9 @@ Page({
     // 交卷前确保登录：成绩已在内存里，登录失败只会提示重试，不会丢数据
     app
       .ensureLogin()
-      .then((me) =>
+      .then(() =>
         quizApi.submitQuizRecord({
-          userId: me.id || (user && user.id) || '匿名',
+          userId: userApi.getBizId() || '匿名',
           activityId: activity.id,
           activityTitle: activity.title,
           score,

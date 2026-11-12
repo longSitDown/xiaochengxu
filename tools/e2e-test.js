@@ -3,6 +3,9 @@
  * 覆盖 21 个页面实际调用的全部服务层方法，验证 mock 引擎 + 适配器 + 业务规则
  * （含预约人实名链路：身份证校验/去重/默认唯一/参观人名单解析）
  */
+// 本脚本只验证 mock 数据层：显式关掉真实登录，避免依赖后端服务与微信环境
+require('../config/index').LOGIN_MODE = 'mock'
+
 // stub wx 全局（内存版 storage）
 const store = {}
 global.wx = {

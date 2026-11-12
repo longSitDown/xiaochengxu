@@ -41,7 +41,7 @@
 
     <view class="btn btn-primary btn-block {{submitting ? 'btn-loading' : ''}}" bindtap="onSubmit">提交反馈</view>
     <!-- 提交后引导提示 -->
-    <view class="fb-tip">提交后可在「我的反馈」中查看处理进度与官方回复</view>
+    <view class="fb-tip">{{tipText}}</view>
   </view>
 
   <!-- 我的反馈 -->

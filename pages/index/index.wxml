@@ -1,14 +1,15 @@
 <!-- 首页：红色 Hero 横幅 + 8 宫格功能入口 + 新闻资讯（参照 UI 设计稿） -->
 <view class="page">
   <!-- Hero 顶部横幅：深红渐变 + 搜索/菜单 + 书法标题 + 公告条 -->
-  <view class="hero" style="padding-top:{{statusBarHeight + 16}}px">
+  <view class="hero" style="padding-top:{{navTop}}px">
     <!-- 装饰层：斜向纹理 + 金星光晕（纯 CSS） -->
     <view class="hero-deco"></view>
     <view class="hero-star hero-star-1"></view>
     <view class="hero-star hero-star-2"></view>
 
     <!-- 顶部操作栏：搜索 + 菜单 -->
-    <view class="hero-topbar">
+    <!-- 右侧留出微信胶囊宽度：胶囊是系统浮层，不占文档流 -->
+    <view class="hero-topbar" style="padding-right:{{menuReserve}}px">
       <view class="hero-search" bindtap="goSearch">
         <view class="hero-search-icon">⌕</view>
         <text class="hero-search-text">搜索资讯 / 英烈 / 故事</text>
@@ -25,9 +26,9 @@
     <!-- 公告滚动条：嵌在 hero 底部，白底圆角悬浮 -->
     <view class="hero-notice" wx:if="{{notices.length}}" bindtap="goNews">
       <view class="hero-notice-badge">公告</view>
-      <swiper class="hero-notice-swiper" vertical autoplay circular interval="3500" disable-touch>
+      <swiper class="hero-notice-swiper" vertical autoplay circular interval="3500" disable-touch style="width: 524rpx; display: block; box-sizing: border-box">
         <swiper-item wx:for="{{notices}}" wx:key="id">
-          <view class="hero-notice-text text-ellipsis">{{item.title}}</view>
+          <view class="hero-notice-text text-ellipsis" style="position: relative; left: 24rpx; top: 0rpx">{{item.title}}</view>
         </swiper-item>
       </swiper>
       <view class="hero-notice-arrow">›</view>
@@ -45,13 +46,37 @@
     </view>
   </view>
 
-  <!-- 纪念馆简介：场馆概况文字 -->
+  <!-- 纪念馆简介：优先渲染 API-02 返回的真实场馆信息，失败时回退静态文案 -->
   <view class="intro-card">
     <view class="intro-head">
       <view class="intro-bar"></view>
-      <text class="intro-title">纪念馆简介</text>
+      <text class="intro-title">{{introTitle}}</text>
+      <text class="venue-status {{venue.isOpen ? '' : 'venue-status-closed'}}" wx:if="{{venue.status}}">{{venue.status}}</text>
     </view>
     <view class="intro-text">{{intro}}</view>
+
+    <!-- 场馆照片：URL 带临时签名，只在本次会话内使用，不做长期缓存 -->
+    <swiper class="venue-photos" wx:if="{{venue && venue.photos.length}}" indicator-dots autoplay circular interval="4000">
+      <swiper-item wx:for="{{venue.photos}}" wx:key="*this">
+        <image class="venue-photo" src="{{item}}" mode="aspectFill" lazy-load />
+      </swiper-item>
+    </swiper>
+
+    <!-- 开放时间 / 地址 / 电话 -->
+    <view class="venue-meta" wx:if="{{venue}}">
+      <view class="venue-meta-row" wx:if="{{venue.hours}}">
+        <text class="venue-meta-label">开放时间</text>
+        <text class="venue-meta-value">{{venue.hours}}</text>
+      </view>
+      <view class="venue-meta-row" wx:if="{{venue.address}}">
+        <text class="venue-meta-label">场馆地址</text>
+        <text class="venue-meta-value">{{venue.address}}</text>
+      </view>
+      <view class="venue-meta-row" wx:if="{{venue.phone}}">
+        <text class="venue-meta-label">联系电话</text>
+        <text class="venue-meta-value venue-meta-link" data-phone="{{venue.phone}}" bindtap="onCallPhone">{{venue.phone}} ›</text>
+      </view>
+    </view>
   </view>
 
   <!-- 荣誉资质：横向滚动徽章列表（区块开关 config.BLOCKS.honors） -->

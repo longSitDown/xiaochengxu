@@ -1,0 +1,79 @@
+<!--
+  登录页：手机号快捷注册/登录
+
+  版式参考湖北省博物馆网上预约小程序：
+    品牌区（logo + 馆名）→ 红色主按钮 → 协议勾选 → 游客浏览入口
+
+  关键实现（易错点都在这）：
+    1. 「手机号快捷注册/登录」必须用 button 组件的 getPhoneNumber 能力，
+       弹窗由微信渲染，小程序画不出也伪造不了；点击不可用 bindtap 拦截，
+       所以未勾选协议时用 wx:else 渲染一个普通按钮，避免绕过协议同意。
+    2. 回调只拿到 e.detail.code（一次性、5 分钟），手机号必须服务端换取
+       （AppSecret 在明道云侧，前端拿不到号码明文）。
+    3. API-06（IsPhone=1）不可用或用户拒绝授权时，自动回退 IsPhone=0 的静默登录，保证功能不中断。
+-->
+<view class="login-page">
+  <view class="brand">
+    <image class="brand-logo" src="/images/logo.png" mode="aspectFit" />
+    <view class="brand-name">红色纪念馆</view>
+    <view class="brand-slogan">传承红色基因 · 赓续红色血脉</view>
+  </view>
+
+  <view class="action">
+    <!-- 开发者工具拿不到真实手机号，提前说明，避免把环境限制误判成代码问题 -->
+    <view class="dev-tip" wx:if="{{isDevtools}}">
+      <text class="dev-tip-strong">当前为开发者工具</text>手机号快捷验证需真机测试：点工具栏「预览」扫码
+    </view>
+
+    <!-- 方式一：微信登录（API-06）。只换游客档案 UserId，不采集手机号，因此不要求勾选协议 -->
+    <button
+      class="btn btn-primary login-btn"
+      hover-class="btn-hover"
+      bindtap="onWxLogin"
+      disabled="{{loading}}"
+    >{{loading ? '登录中…' : '微信一键登录'}}</button>
+
+    <view class="or-line"><text>或</text></view>
+
+    <!-- 方式二：手机号授权登录（API-06 形式一）。需小程序完成微信认证，且用户勾选协议 -->
+    <button
+      wx:if="{{phoneLoginEnabled && agreed}}"
+      class="btn btn-plain login-btn login-btn-second"
+      hover-class="btn-hover"
+      open-type="getPhoneNumber"
+      bindgetphonenumber="onGetPhone"
+      disabled="{{loading}}"
+    >手机号快捷注册/登录</button>
+
+    <!-- 开关关闭（未认证）或未勾协议：普通按钮只做说明，不触发微信授权面板 -->
+    <button
+      wx:else
+      class="btn login-btn login-btn-second login-btn-off"
+      hover-class="btn-hover"
+      bindtap="onPhoneUnavailable"
+    >{{phoneLoginEnabled ? '手机号快捷注册/登录' : '手机号快捷登录（待微信认证）'}}</button>
+
+    <view class="agree-row">
+      <view class="agree-check {{agreed ? 'agree-check-on' : ''}}" catchtap="onToggleAgree">
+        <view class="agree-tick" wx:if="{{agreed}}"></view>
+      </view>
+      <view class="agree-text">
+        我已阅读并同意
+        <text
+          class="agree-link"
+          catchtap="onOpenAgreement"
+          data-type="user"
+        >《用户协议》</text>
+        <text
+          class="agree-link"
+          catchtap="onOpenAgreement"
+          data-type="privacy"
+        >《数据隐私安全声明》</text>
+      </view>
+    </view>
+
+    <view class="login-hint" wx:if="{{hint}}">{{hint}}</view>
+  </view>
+
+  <view class="skip" catchtap="onSkip">暂不登录，先浏览</view>
+</view>

@@ -69,7 +69,8 @@ const assert = (cond, msg) => {
 
 async function main() {
   const config = require('../config/index')
-  // 切到代理模式（生产路径）
+  // 固定为代理模式（本脚本覆盖的是 /api/auth/login + 后端 token 链路）
+  config.LOGIN_MODE = 'proxy'
   config.USE_MOCK = false
   config.USE_PROXY = true
   config.API_BASE = 'https://api.test.local'
@@ -130,10 +131,10 @@ async function main() {
   assert(served401, '401 后自动重登并重放原请求，最终拿到数据')
   assert(loginCalls === callsBefore401 + 1, '401 只触发一次重登（不会循环）')
 
-  /* ---- 7. mock 模式上传头像直接返回本地路径 ---- */
+  /* ---- 7. mock 模式无文件系统能力时降级复用临时路径（真机会落盘到 USER_DATA_PATH） ---- */
   config.USE_MOCK = true
   const localPath = await userApi.uploadAvatar('wxfile://tmp_avatar.png')
-  assert(localPath === 'wxfile://tmp_avatar.png', 'mock 模式上传头像直接复用本地临时路径')
+  assert(localPath === 'wxfile://tmp_avatar.png', '无 wx.env/文件系统桩时应安全降级为临时路径')
 
   console.log('\n===== 登录链路自测通过（并发去重 / 过期重登 / 401 自愈 / 失败可重试）=====')
 }

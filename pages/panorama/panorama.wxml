@@ -1,7 +1,7 @@
 <!-- 720°全景展馆：拖拽平移 + 热点 + 顶部信息 + 右侧功能 + 底部章节菜单（参照 UI 设计稿） -->
 <view class="pano-page">
   <!-- 顶部信息条：返回 + 馆名 + 更多（适配状态栏高度） -->
-  <view class="pano-topbar" style="padding-top:{{statusBarHeight}}px">
+  <view class="pano-topbar" style="padding-top:{{statusBarHeight}}px;padding-right:{{menuReserve}}px">
     <view class="pano-back" bindtap="onBack">
       <text class="pano-back-icon">×</text>
     </view>

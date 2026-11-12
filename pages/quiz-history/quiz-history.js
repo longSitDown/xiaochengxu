@@ -27,7 +27,7 @@ Page({
       return
     }
     quizApi
-      .getMyRecords(user.id)
+      .getMyRecords(userApi.getBizId())
       .then((records) => {
         const list = records.map((r) => Object.assign({}, r, {
           timeText: formatDate(r.createTime, 'yyyy-MM-dd HH:mm'),

@@ -44,7 +44,7 @@ Page({
           activity: activity || null,
           top3: podium,
           others: list.slice(3),
-          myUserId: user ? user.id : '',
+          myUserId: user ? userApi.getBizId() : '',
           loading: false
         })
         if (activity) wx.setNavigationBarTitle({ title: activity.title + ' · 排行榜' })

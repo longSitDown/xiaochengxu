@@ -5,14 +5,15 @@
     <block wx:if="{{user}}">
       <!-- 头像：官方"头像昵称填写能力"，用户主动点击选择（wx.getUserProfile 已废弃） -->
       <button class="user-avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
-        <image class="user-avatar" src="{{user.avatar}}" mode="aspectFill" />
+        <image class="user-avatar" src="{{user.avatar}}" mode="aspectFill" binderror="onAvatarError" />
       </button>
       <view class="user-info">
         <view class="user-name" bindtap="onOpenEditor">
           {{user.nickname}}
           <text class="user-edit">编辑资料</text>
         </view>
-        <view class="user-phone">{{user.phone || '未绑定手机号'}}</view>
+        <!-- 手机号脱敏展示（138****8000），编辑面板里仍是完整值 -->
+        <view class="user-phone">{{phoneText}}</view>
       </view>
     </block>
     <block wx:else>
@@ -21,7 +22,7 @@
         <view class="user-name">游客用户</view>
         <view class="user-phone">登录后可预约、答题、查看历史记录</view>
       </view>
-      <view class="user-login-btn" bindtap="onLogin">微信登录</view>
+      <view class="user-login-btn" bindtap="onLogin">登录 / 注册</view>
     </block>
   </view>
 
@@ -68,36 +69,63 @@
     <view class="profile-copyright">红色纪念馆 · 传承红色基因</view>
   </view>
 
-  <!-- 资料编辑面板：头像用 chooseAvatar，昵称用 type="nickname"（可一键填入微信昵称） -->
+  <!--
+    资料编辑面板：头像用 chooseAvatar，昵称用 type="nickname"（可一键填入微信昵称）
+    用 form + form-type="submit" 收集昵称，是微信官方针对 2.24.4+ 内容安全检测
+    「blur 时异步清空输入」给出的推荐做法；不再绑定 bindblur 覆盖草稿。
+  -->
   <view class="edit-mask" wx:if="{{editing}}" catchtouchmove="noop" bindtap="onCloseEditor"></view>
-  <view class="edit-panel" wx:if="{{editing}}" catchtap="noop">
-    <view class="edit-title">完善个人资料</view>
+  <view class="edit-panel" wx:if="{{editing}}">
+    <form bindsubmit="onSaveProfile">
+      <view class="edit-title">完善个人资料</view>
 
-    <view class="edit-row">
-      <text class="edit-label">头像</text>
-      <button class="edit-avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
-        <image class="edit-avatar" src="{{draft.avatar || '/images/placeholder.png'}}" mode="aspectFill" />
-        <text class="edit-hint">{{uploading ? '上传中…' : '点击更换'}}</text>
-      </button>
-    </view>
+      <view class="edit-row">
+        <text class="edit-label">头像</text>
+        <button class="edit-avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+          <image class="edit-avatar" src="{{draft.avatar || '/images/placeholder.png'}}" mode="aspectFill" />
+          <text class="edit-hint">{{uploading ? '上传中…' : '点击更换'}}</text>
+        </button>
+      </view>
 
-    <view class="edit-row">
-      <text class="edit-label">昵称</text>
-      <input
-        class="edit-input"
-        type="nickname"
-        value="{{draft.nickname}}"
-        placeholder="点击使用微信昵称"
-        placeholder-class="edit-placeholder"
-        maxlength="20"
-        bindinput="onNicknameInput"
-        bindblur="onNicknameInput"
-      />
-    </view>
+      <view class="edit-row">
+        <text class="edit-label">昵称</text>
+        <input
+          class="edit-input"
+          type="nickname"
+          name="nickname"
+          value="{{draft.nickname}}"
+          placeholder="点击使用微信昵称"
+          placeholder-class="edit-placeholder"
+          maxlength="20"
+          bindinput="onNicknameInput"
+        />
+      </view>
 
-    <view class="edit-actions">
-      <view class="btn edit-btn-plain" bindtap="onCloseEditor">取消</view>
-      <view class="btn btn-primary edit-btn-save" bindtap="onSaveProfile">{{saving ? '保存中…' : '保存'}}</view>
-    </view>
+      <view class="edit-row">
+        <text class="edit-label">手机号</text>
+        <!-- 微信验证过的手机号即账号标识，只读：换号必须重新走登录授权，否则账号与资料会错位 -->
+        <block wx:if="{{phoneVerified}}">
+          <text class="edit-input edit-readonly">{{phoneText}}</text>
+          <text class="edit-verified">微信已验证</text>
+        </block>
+        <input
+          wx:else
+          class="edit-input"
+          type="number"
+          name="phone"
+          maxlength="11"
+          value="{{draft.phone}}"
+          placeholder="填写常用手机号"
+          placeholder-class="edit-placeholder"
+          bindinput="onPhoneInput"
+        />
+      </view>
+      <view class="edit-tip">{{phoneVerified ? '手机号由微信验证，作为登录账号不可自行修改。' : '手机号用于预约联系与入馆通知，请填写本人常用号码；留空表示不绑定。'}}</view>
+
+      <view class="edit-actions">
+        <view class="btn edit-btn-plain" bindtap="onCloseEditor">取消</view>
+        <button class="btn btn-primary edit-btn-save" form-type="submit">{{saving ? '保存中…' : '保存'}}</button>
+      </view>
+    </form>
   </view>
 </view>

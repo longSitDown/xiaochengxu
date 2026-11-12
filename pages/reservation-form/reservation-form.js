@@ -17,6 +17,7 @@
 const reservationApi = require('../../api/reservation')
 const visitorApi = require('../../api/visitor')
 const userApi = require('../../api/user')
+const venueApi = require('../../api/venue')
 const { formatDate, maskIdCard, validateIdCard } = require('../../utils/format')
 const app = getApp()
 
@@ -32,7 +33,12 @@ Page({
     hasLaterMonth: false, // 可约日期是否跨到下月（提供"切换年月"）
     isReschedule: false,
     resv: null,        // 改期时的原预约
-    dates: [],         // [{value, label, weekday, slots: [{timeSlot, available, total}]}]
+    dates: [],         // [{value,label,weekday,dateId,quota,used,remaining,reservable,slots}]
+    hasSlots: true,    // 是否有时段维度：真实场馆配置了时段（SessionId）才为 true
+    realMode: false,   // true = 日期来自 API-02、提交走 API-05（明道云实时预约）
+    dateSource: 'mock',// 'venue' | 'mock'，便于排查与自测
+    museumName: '',
+    remainText: '',    // 选中日期的余量文案
     visitDate: '',
     timeSlot: '',
     type: '个人',
@@ -57,7 +63,7 @@ Page({
 
   onLoad(options) {
     const user = userApi.getUser()
-    this.setData({ userId: user ? user.id : '' })
+    this.setData({ userId: user ? userApi.getBizId() : '' })
     // 新建预约固定为「个人」，不再接受 ?type=团体 预设（旧链接传入时静默忽略）；
     // 团体类型只在改期历史团体订单时由 loadForReschedule 恢复
     if (options.reschedule) {
@@ -67,7 +73,7 @@ Page({
       this.loadForReschedule()
     } else {
       this.loadVisitors(user)
-      this.loadQuotas()
+      this.loadDates()
     }
   },
 
@@ -84,7 +90,7 @@ Page({
   loadVisitors(user) {
     if (!user) return
     visitorApi
-      .getVisitors(user.id)
+      .getVisitors(userApi.getBizId())
       .then((list) => {
         const withMask = this.decorateVisitors(list)
         const selected = this.data.type === '个人' && !this.data.selectedVisitors.length
@@ -117,14 +123,14 @@ Page({
     })
   },
 
-  /** 改期模式：拉取原预约与名额，回填表单 */
+  /** 改期模式：拉取原预约与本地名额，回填表单 */
   loadForReschedule() {
     Promise.all([
       reservationApi.getReservationDetail(this.rescheduleId),
-      reservationApi.getQuotas()
+      reservationApi.getQuotaDates()
     ])
-      .then(([resv, quotas]) => {
-        this.applyQuotas(quotas, resv)
+      .then(([resv, res]) => {
+        this.applyDates(res, resv)
         this.setData({
           resv,
           type: resv.type,
@@ -138,50 +144,66 @@ Page({
       })
   },
 
-  loadQuotas() {
-    reservationApi
-      .getQuotas()
-      .then((quotas) => this.applyQuotas(quotas))
+  /**
+   * 加载可预约日期：优先 API-02 的 ReservationDateList（真实放号、按日期不按时段），
+   * 场馆接口不可用时自动回退本地名额表（带时段），两种结构在此统一。
+   */
+  loadDates() {
+    return reservationApi
+      .getAvailableDates()
+      .then((res) => {
+        if (res.fallbackReason) {
+          console.warn('[预约] 已回退本地名额表：' + res.fallbackReason)
+        }
+        this.applyDates(res)
+        if (!res.dates.length) {
+          wx.showToast({ title: '当前暂无可预约日期', icon: 'none' })
+        }
+      })
       .catch((e) => {
         wx.showToast({ title: (e && e.message) || '加载失败', icon: 'none' })
       })
   },
 
-  /** 名额 → 日期分组结构（可选回填原预约） */
-  applyQuotas(quotas, resv) {
-    const byDate = {}
-    quotas.forEach((q) => {
-      if (!byDate[q.visitDate]) {
-        const d = new Date(q.visitDate)
-        byDate[q.visitDate] = {
-          value: q.visitDate,
-          label: formatDate(q.visitDate, 'MM月dd日'),
-          // getDay() 周日=0，用字符表直接映射成中文星期
-          weekday: '周' + '日一二三四五六'.charAt(d.getDay()),
-          slots: []
-        }
-      }
-      byDate[q.visitDate].slots.push({
-        timeSlot: q.timeSlot,
-        available: q.available,
-        total: q.totalQuota,
-        disabled: q.available <= 0
-      })
-    })
-    // 日期键为 yyyy-mm-dd，字典序即时间先后，故可直接 sort() 实现日期升序
-    const dates = Object.keys(byDate).sort().map((k) => byDate[k])
-    const firstOpen = this.findFirstOpen(dates, resv)
+  /**
+   * 日期结果 → 页面结构（可选回填原预约）
+   * @param {{source:string, dates:Array, museumName?:string}} res
+   * @param {Object} [resv] 改期时的原预约
+   */
+  applyDates(res, resv) {
+    const dates = (res.dates || []).slice()
+    // 真实场馆只有配置了时段才有场次选择；本地模式仍按时段表展开
+    const hasSlots = dates.some((d) => d.slots && d.slots.length)
+    const firstOpen = this.findFirstOpen(dates, resv || null)
+    const picked = dates.find((d) => d.value === firstOpen.visitDate)
     this.setData({
       dates,
+      hasSlots,
+      dateSource: res.source || 'mock',
+      realMode: res.source === 'venue',
+      museumName: res.museumName || '',
       visitDate: firstOpen.visitDate,
-      timeSlot: firstOpen.timeSlot
+      timeSlot: firstOpen.timeSlot,
+      // 注意：必须在 dates 落库的同一次 setData 里算好，否则读到的还是旧数组
+      remainText: this.remainTextOfDate(picked)
     })
     this.monthOffset = 0 // 日历从可约首日所在月开始
     this.buildCalendar()
   },
 
+  /** 选中日期的余量文案：真实模式「余 980 / 1000」，本地模式取各场次合计 */
+  remainTextOf(value) {
+    return this.remainTextOfDate(this.data.dates.find((x) => x.value === value))
+  },
+
+  remainTextOfDate(d) {
+    if (!d) return ''
+    if (!d.reservable && d.remaining <= 0) return '已约满'
+    return '余 ' + d.remaining + (d.quota ? ' / ' + d.quota : '')
+  },
+
   /**
-   * 由 dates（可约名额）生成月历网格：
+   * 由 dates 生成月历网格：
    * 以第一个可约日期所在月为基准（monthOffset 可切下月），
    * 逐天标记 inRange（可约范围内）/ full（约满）/ selected（已选中）。
    */
@@ -198,7 +220,7 @@ Page({
     const daysInMonth = new Date(vy, vm + 1, 0).getDate()
     const startBlank = view.getDay() // 周日=0，前面补空白格
 
-    // value → 名额日期 的索引，便于逐天查状态
+    // value → 日期项 的索引，便于逐天查状态
     const byDate = {}
     dates.forEach((d) => { byDate[d.value] = d })
 
@@ -211,7 +233,8 @@ Page({
         day,
         value,
         inRange: !!d,
-        full: d ? d.slots.every((s) => s.disabled) : false,
+        // 真实模式没有时段，约满与否直接看 Reservable + 余量
+        full: d ? !reservationApi._internal.dateSelectable(d) : false,
         selected: value === this.data.visitDate
       })
     }
@@ -233,18 +256,20 @@ Page({
     this.buildCalendar()
   },
 
-  /** 优先回填原时段；否则取第一个有余量的时段 */
+  /** 优先回填原日期（及时段）；否则取第一个可预约日期 */
   findFirstOpen(dates, resv) {
+    const selectable = reservationApi._internal.dateSelectable
     if (resv) {
       const d = dates.find((x) => x.value === resv.visitDate)
-      if (d) {
-        const s = d.slots.find((x) => x.timeSlot === resv.timeSlot)
-        if (s && !s.disabled) return { visitDate: d.value, timeSlot: s.timeSlot }
+      if (d && selectable(d)) {
+        const s = (d.slots || []).find((x) => x.timeSlot === resv.timeSlot)
+        return { visitDate: d.value, timeSlot: s && !s.disabled ? s.timeSlot : '' }
       }
     }
     for (let i = 0; i < dates.length; i++) {
-      const s = dates[i].slots.find((x) => !x.disabled)
-      if (s) return { visitDate: dates[i].value, timeSlot: s.timeSlot }
+      if (!selectable(dates[i])) continue
+      const s = (dates[i].slots || []).find((x) => !x.disabled)
+      return { visitDate: dates[i].value, timeSlot: s ? s.timeSlot : '' }
     }
     return { visitDate: '', timeSlot: '' }
   },
@@ -265,15 +290,15 @@ Page({
     this.selectDate(e.currentTarget.dataset.value)
   },
 
-  /** 选中某可约日期：自动选中第一个有余量的时段并刷新日历选中态 */
+  /** 选中某可约日期：有时段则自动选第一个有余量的场次，无时段（真实场馆）则只记日期 */
   selectDate(value) {
     const date = this.data.dates.find((d) => d.value === value)
     if (!date) return
-    // 切换日期时自动选中第一个有余量的时段
     const slot = (date.slots || []).find((s) => !s.disabled)
     this.setData({
       visitDate: value,
-      timeSlot: slot ? slot.timeSlot : ''
+      timeSlot: slot ? slot.timeSlot : '',
+      remainText: this.remainTextOf(value)
     })
     this.buildCalendar()
   },
@@ -442,8 +467,9 @@ Page({
   onBottomTap() {
     if (this.data.submitting) return
     if (this.data.step === 1) {
-      if (!this.data.visitDate || !this.data.timeSlot) {
-        wx.showToast({ title: '请选择参观日期与场次', icon: 'none' })
+      const missing = this.dateMissingText()
+      if (missing) {
+        wx.showToast({ title: missing, icon: 'none' })
         return
       }
       // 改期模式没有第二步，日期时段确认后直接提交
@@ -458,6 +484,13 @@ Page({
     }
   },
 
+  /** 日期（及本地模式的场次）是否选全，未选全时返回提示文案 */
+  dateMissingText() {
+    if (!this.data.visitDate) return '请选择参观日期'
+    if (this.data.hasSlots && !this.data.timeSlot) return '请选择参观场次'
+    return ''
+  },
+
   /** 返回第一步调整日期时段 */
   onPrevStep() {
     this.setData({ step: 1 })
@@ -468,8 +501,10 @@ Page({
 
   validate() {
     const { type, visitorCount, organization, contactName, contactPhone, contactIdCard,
-      visitDate, timeSlot, isReschedule, selectedVisitors } = this.data
-    if (!visitDate || !timeSlot) return '请选择参观日期与时段'
+      visitDate, isReschedule, selectedVisitors, realMode } = this.data
+    const missing = this.dateMissingText()
+    if (missing) return missing
+    if (!visitDate) return '请选择参观日期'
     if (isReschedule) {
       if (type === '个人' && (visitorCount < 1 || visitorCount > 5)) return '个人预约每单限 1-5 人'
       if (type === '团体' && (visitorCount < 10 || visitorCount > 100)) return '团体预约每单限 10-100 人'
@@ -478,6 +513,12 @@ Page({
     if (type === '个人') {
       if (!selectedVisitors.length) return '请选择参观人（进馆需核验身份证）'
       if (selectedVisitors.length > PERSON_MAX) return '个人预约每单最多 ' + PERSON_MAX + ' 人'
+      // 真实模式每位入场者的姓名 / 身份证 / 手机号都会逐条上报给场馆，
+      // 服务端不做元素级校验（ISS-005），只能前端卡住
+      if (realMode) {
+        const bad = selectedVisitors.find((v) => !v.name || !validateIdCard(v.idCard) || !/^1\d{10}$/.test(String(v.phone || '').trim()))
+        if (bad) return '「' + (bad.name || '未命名') + '」的身份证或手机号不完整，请先在预约人中补全'
+      }
     } else {
       if (visitorCount < 10 || visitorCount > 100) return '团体预约每单限 10-100 人'
       if (!organization.trim()) return '请填写团体名称'
@@ -488,8 +529,31 @@ Page({
     return ''
   },
 
+  /**
+   * 真实模式下本次提交对应的预约日历记录 ID（ReservateDateId）。
+   * 一个日期配置了多个时段时，取当前选中时段那条记录的 ID；否则用全天记录的 ID。
+   */
+  selectedDateId() {
+    const { dates, visitDate, timeSlot } = this.data
+    const date = dates.find((d) => d.value === visitDate)
+    if (!date) return ''
+    const slot = (date.slots || []).find((s) => s.timeSlot === timeSlot)
+    return (slot && slot.dateId) || date.dateId || ''
+  },
+
   onSubmit() {
     if (this.data.submitting) return
+    // 真实场馆的预约记录写在明道云「用户预约记录」表，改期需「先取消再重约」：
+    // API-05 只能新建；虽然 API-09 自 v1.9.8 已修复为「已就绪」，
+    // 但「取消 + 重新提交」跨两个异步写操作、失败难回滚，前端暂不开放改期入口
+    if (this.data.realMode && this.data.isReschedule) {
+      wx.showModal({
+        title: '暂不支持在线改期',
+        content: '该场馆的预约由场馆系统管理，需要变更日期时请先取消原预约后重新预约。',
+        showCancel: false
+      })
+      return
+    }
     const msg = this.validate()
     if (msg) {
       wx.showToast({ title: msg, icon: 'none' })
@@ -512,6 +576,8 @@ Page({
 
   /** 实际提交（调用前已确保登录态） */
   doSubmit(user) {
+    // 真实场馆：走 API-05（Visitors 数组），与本地 HAP 工作表是两条独立链路
+    if (this.data.realMode) return this.doSubmitVenue(user)
     const { visitDate, timeSlot, type, visitorCount, organization, contactName,
       contactPhone, contactIdCard, remark, selectedVisitors, isReschedule } = this.data
 
@@ -522,7 +588,7 @@ Page({
       // 个人：联系人=第一位参观人，参观人整单实名登记
       const first = selectedVisitors[0]
       req = reservationApi.createReservation({
-        userId: user ? user.id : '匿名',
+        userId: user ? userApi.getBizId() : '匿名',
         type,
         visitDate,
         timeSlot,
@@ -537,7 +603,7 @@ Page({
     } else {
       // 团体：联系人（带队负责人）实名登记
       req = reservationApi.createReservation({
-        userId: user ? user.id : '匿名',
+        userId: user ? userApi.getBizId() : '匿名',
         type,
         visitDate,
         timeSlot,
@@ -565,6 +631,71 @@ Page({
         // 服务层已给出明确 message（名额不足/日期未开放/状态不可变更等）
         wx.showModal({
           title: '提示',
+          content: (e && e.message) || '提交失败，请稍后重试',
+          showCancel: false
+        })
+      })
+  },
+
+  /**
+   * 真实场馆提交（API-05 v1.9.14 契约）
+   *
+   * 入参只有 Code / Token / UserId / ReservateDateId / Visitors 五项，
+   * 没有团体名称、备注、人数；到场人数由 Visitors 长度决定。
+   * Visitors 元素证件号对外键名为 **IdNumber**（v1.9.8 破坏性更名），
+   * 页面内部沿用 idCard，由 api/venue.js 的 createReservation 统一映射。
+   * 提交成功后记录落在明道云「用户预约记录」表，本地的「我的预约」列表读的是
+   * 自有工作表，暂时看不到这条记录（API-07 已于 v1.9.8 废弃、API-11 列表不含日期），
+   * 因此这里只回显预约编号。
+   */
+  doSubmitVenue(user) {
+    const { selectedVisitors, isReschedule } = this.data
+    if (isReschedule) {
+      this.setData({ submitting: false })
+      return
+    }
+    const userId = userApi.getUserId() || (user && user.userId) || ''
+    if (!userId) {
+      this.setData({ submitting: false })
+      wx.showModal({
+        title: '需要重新登录',
+        content: '登录态缺少游客档案 ID，请退出后重新登录再预约。',
+        showCancel: false
+      })
+      return
+    }
+    const reservateDateId = this.selectedDateId()
+    if (!reservateDateId) {
+      this.setData({ submitting: false })
+      wx.showToast({ title: '该日期暂不可预约，请重新选择', icon: 'none' })
+      return
+    }
+    const visitors = selectedVisitors.map((v) => ({
+      name: String(v.name || '').trim(),
+      idCard: String(v.idCard || '').trim().toUpperCase(),
+      mobile: String(v.phone || '').trim(),
+      type: '成人'
+    }))
+
+    return venueApi
+      .createReservation({ userId, reservateDateId, visitors })
+      .then((res) => {
+        this.setData({ submitting: false })
+        const codeText = res.reservationCode ? '预约编号：' + res.reservationCode + '\n' : ''
+        wx.showModal({
+          title: '预约成功',
+          content: codeText + '请按预约日期携本人证件到馆核验。',
+          showCancel: false,
+          success: () => {
+            // 我的预约列表当前读自有工作表，看不到场馆系统的记录，故回首页而非列表
+            wx.redirectTo({ url: '/pages/index/index' })
+          }
+        })
+      })
+      .catch((e) => {
+        this.setData({ submitting: false })
+        wx.showModal({
+          title: '预约失败',
           content: (e && e.message) || '提交失败，请稍后重试',
           showCancel: false
         })

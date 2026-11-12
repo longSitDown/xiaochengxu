@@ -1,9 +1,11 @@
 /**
  * 首页：红色 Hero 横幅 + 功能宫格入口 + 新闻资讯（分类筛选）
  * 数据来自 api/home 服务层，页面不感知数据来源（mock / 明道云）。
+ * 场馆主页信息另走 api/venue（API-01 + API-02 工作流 Webhook），与 HAP V3 通道解耦。
  */
 const homeApi = require('../../api/home')
 const exhibitionApi = require('../../api/exhibition')
+const venueApi = require('../../api/venue')
 const config = require('../../config/index')
 const { formatDate } = require('../../utils/format')
 const storage = require('../../utils/storage')
@@ -28,10 +30,14 @@ const ALL_ENTRIES = [
 Page({
   data: {
     statusBarHeight: 20, // 自定义导航栏：状态栏高度（hero 顶部留白）
+    navTop: 36,          // 顶部内容起始位置（按胶囊 top 对齐）
+    menuReserve: 100,    // 右侧为微信胶囊预留的宽度（px）
     notices: [],        // 滚动公告条
     popupNotice: null,  // 弹窗公告
     entries: [],        // 功能宫格入口（已按 HIDDEN_ENTRIES 过滤）
-    intro: '',          // 纪念馆简介
+    intro: '',          // 纪念馆简介（真实场馆接口失败时保留静态文案）
+    introTitle: '纪念馆简介', // 简介区标题：有真实数据时显示场馆名
+    venue: null,        // API-02 返回的场馆信息（精简视图字段）
     honors: [],         // 荣誉资质列表（是否展示由 config.BLOCKS.honors 控制）
     showHonors: config.BLOCKS.honors, // 荣誉资质区块开关
     newsTabs: ['全部'], // 资讯分类 tabs（数据聚合后填充）
@@ -41,15 +47,25 @@ Page({
     loading: true
   },
 
-  onLoad() {
-    // 自定义导航栏需要自己撑起状态栏高度
-    const info = wx.getSystemInfoSync()
-    this.setData({ statusBarHeight: info.statusBarHeight || 20 })
+  onLoad(options) {
+    // 自定义导航栏：按微信胶囊实际位置留白，避免搜索框 / 菜单按钮被系统胶囊遮挡
+    const app = getApp()
+    const nav = (app && app.getNavMetrics && app.getNavMetrics()) || {}
+    this.setData({
+      statusBarHeight: nav.statusBarHeight || 20,
+      navTop: nav.navTop || 36,
+      menuReserve: typeof nav.menuReserve === 'number' ? nav.menuReserve : 100
+    })
+
+    // 扫码进入：小程序码 scene 形如 code=220261105083，或普通链接带 ?code=。
+    // 解析后写入本地，冷启动与其它页面复用同一场馆编号。
+    const code = venueApi.parseScene(options && options.scene) || (options && options.code) || ''
+    if (code) venueApi.setVenueCode(code)
 
     // 宫格入口：按 config.HIDDEN_ENTRIES 过滤（当前隐藏 VR展览/展厅导览/AI讲解/文物赏析/祭扫烈士/红色地图）
     this.setData({ entries: this.visibleEntries() })
 
-    // 纪念馆简介 + 荣誉资质（静态展示，后续可接入接口）
+    // 纪念馆简介 + 荣誉资质（静态展示，作为场馆接口失败时的兜底）
     this.setData({
       intro: '津市市革命纪念馆是为纪念在中国革命斗争中英勇献身的津市籍革命先烈而兴建的专题纪念馆。馆内收藏革命文物、文献资料数百件，通过实物、图片、场景复原等形式，生动再现了津市人民在大革命、土地革命、抗日战争和解放战争时期的光辉革命历程，是开展爱国主义教育和革命传统教育的重要阵地。',
       honors: ['全国爱国主义教育示范基地', '湖南省文物保护单位', '国家AAA级旅游景区', '湖南省红色旅游经典景区', '湖南省学雷锋活动示范点']
@@ -58,10 +74,54 @@ Page({
     // 首页不弹登录：资讯、展馆、指南等公开内容游客可直接浏览，
     // 统一改为在写操作（预约/答题/反馈）时由 app.ensureLogin() 引导登录
     this.fetchAll()
+    this.loadVenue()
   },
 
   onPullDownRefresh() {
     this.fetchAll(() => wx.stopPullDownRefresh())
+    this.loadVenue()
+  },
+
+  /**
+   * 场馆主页（API-01 签令牌 → API-02 查数据）。
+   * 失败时静默保留静态简介：mock 模式 / 合法域名未配置 / 断网都不会让首页空白。
+   * 图片 URL 带临时签名，随查随用，不写入 storage 长期缓存。
+   */
+  loadVenue() {
+    return venueApi.getVenue()
+      .then((venue) => {
+        // 只 setData 视图需要的字段，避免把整个数据对象推给渲染层
+        this.setData({
+          venue: {
+            name: venue.name,
+            status: venue.status,
+            isOpen: venue.isOpen,
+            hours: venue.hours,
+            address: venue.address,
+            phone: venue.phone,
+            // v1.3.27 新增：是否需要核销预约，供后续预约页读取（当前接口尚未返回，缺省 false）
+            needVerify: venue.needVerify,
+            photos: venue.photos.slice(0, 5)
+          },
+          introTitle: venue.name || '纪念馆简介',
+          intro: venue.introText || this.data.intro
+        })
+      })
+      .catch((e) => {
+        // 真机调试时把原始 errMsg 一并打印，便于定位「合法域名 / 超时 / 证书」类问题
+        console.warn(
+          '[venue] 场馆信息加载失败：',
+          (e && e.message) || e,
+          e && e.errMsg ? '| 原始错误：' + e.errMsg : ''
+        )
+      })
+  },
+
+  /** 拨打场馆联系电话（wx.makePhoneCall 会先弹系统确认） */
+  onCallPhone(e) {
+    const phone = e.currentTarget.dataset.phone
+    if (!phone) return
+    wx.makePhoneCall({ phoneNumber: String(phone) })
   },
 
   /** 按 config.HIDDEN_ENTRIES 过滤出实际渲染的宫格入口 */

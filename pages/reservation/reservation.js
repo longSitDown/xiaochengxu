@@ -57,7 +57,7 @@ Page({
       return
     }
     reservationApi
-      .getMyReservations(user.id)
+      .getMyReservations(userApi.getBizId())
       .then((all) => {
         this.all = all.map((r) => Object.assign({}, r, {
           timeText: formatDate(r.createTime, 'yyyy-MM-dd HH:mm'),

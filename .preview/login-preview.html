@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>登录页预览</title>
+<style>
+  /* 750rpx = 375px，1rpx = 0.5px；尺寸按 login.wxss 等比换算 */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 375px; height: 812px; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    --primary: #C8102E;
+    --primary-dark: #9E0B20;
+    --red-bright: #D92543;
+    --red-deep: #A80F28;
+    --text-main: #2B2B2B;
+    --text-sub: #7A7A7A;
+    background: #F5F3F0;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(160,124,56,.018) 0 1px, transparent 1px 6px),
+      repeating-linear-gradient(-45deg, rgba(160,124,56,.014) 0 1px, transparent 1px 8px);
+  }
+  /* 模拟原生导航栏 */
+  .navbar {
+    height: 88px; display: flex; align-items: flex-end; justify-content: center;
+    padding-bottom: 10px; background: #F5EFE2; position: relative;
+  }
+  .navbar .title { font-size: 17px; font-weight: 600; color: #000; }
+  .navbar .capsule {
+    position: absolute; right: 8px; bottom: 8px; width: 87px; height: 32px;
+    border: .5px solid rgba(0,0,0,.1); border-radius: 16px; background: rgba(255,255,255,.6);
+    display: flex; align-items: center; justify-content: space-around; color: #000;
+    font-size: 15px; letter-spacing: 2px;
+  }
+  .navbar .back { position: absolute; left: 14px; bottom: 12px; font-size: 20px; color: #000; }
+
+  .login-page { display: flex; flex-direction: column; height: calc(812px - 88px); padding: 0 28px; }
+
+  .brand { padding-top: 90px; display: flex; flex-direction: column; align-items: center; }
+  .brand-logo {
+    width: 88px; height: 88px; border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(201,160,99,.25);
+  }
+  .brand-name {
+    margin-top: 18px; font-size: 21px; font-weight: 700; letter-spacing: 3px;
+    color: var(--primary-dark);
+  }
+  .brand-slogan { margin-top: 7px; font-size: 12px; letter-spacing: 1.5px; color: var(--text-sub); }
+
+  .action { margin-top: 75px; }
+
+  .dev-tip {
+    margin-bottom: 14px; padding: 8px 10px; border-radius: 6px;
+    background: rgba(224,138,0,.09); font-size: 11px; line-height: 1.6; color: #9A6600;
+  }
+  .dev-tip strong { font-weight: 600; margin-right: 4px; }
+
+  .hint {
+    margin-top: 10px; font-size: 12px; line-height: 1.5; text-align: center; color: #E08A00;
+  }
+
+  .login-btn {
+    width: 100%; height: 48px; border: none; border-radius: 24px;
+    background: linear-gradient(135deg, #D92543 0%, #C8102E 60%, #A80F28 100%);
+    color: #fff; font-size: 16px; font-weight: 500; letter-spacing: 1px;
+    line-height: 48px; text-align: center;
+    font-family: inherit;
+    box-shadow: 0 4px 12px rgba(200,16,46,.18);
+  }
+  /* 未勾选协议时的弱化态 */
+  .login-btn-dim { opacity: .62; box-shadow: none; }
+
+  .agree-row { margin-top: 18px; display: flex; align-items: flex-start; }
+  .agree-check {
+    flex-shrink: 0; width: 17px; height: 17px; margin: 2px 7px 0 0;
+    border: 1px solid #C9C4BC; border-radius: 50%; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .agree-check-on { background: #C8102E; border-color: #C8102E; }
+  .agree-tick {
+    width: 7px; height: 3.5px; margin-top: -2px;
+    border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff;
+    transform: rotate(-45deg);
+  }
+  .agree-text { flex: 1; font-size: 12px; line-height: 1.7; color: var(--text-sub); }
+  .agree-link { color: var(--primary); }
+
+  .skip {
+    margin-top: auto; padding: 14px 0 32px; text-align: center;
+    font-size: 13px; color: var(--text-sub);
+  }
+
+  /* 以下必须排在 .login-btn 之后，否则会被主按钮的渐变背景覆盖 */
+  .login-btn-second {
+    height: 44px; line-height: 44px; font-size: 15px; box-shadow: none;
+    background: #fff; color: #C8102E; border: 1px solid #C8102E;
+  }
+  .login-btn-off { border-color: #DDD8D0; color: #B0B0B0; background: #FCFBF9; }
+
+  .or-line {
+    display: flex; align-items: center; margin: 15px 0;
+    font-size: 11px; color: #B0B0B0;
+  }
+  .or-line::before, .or-line::after { content: ''; flex: 1; height: 1px; background: #ECECEC; }
+  .or-line span { margin: 0 10px; }
+</style>
+</head>
+<body>
+  <div class="navbar">
+    <span class="back">‹</span>
+    <span class="title">登录</span>
+    <span class="capsule">••• &nbsp;— &nbsp;◎</span>
+  </div>
+
+  <div class="login-page">
+    <div class="brand">
+      <img class="brand-logo" src="file:///D:/workspace/2026/8/bowu/wxnew/images/logo.png">
+      <div class="brand-name">红色纪念馆</div>
+      <div class="brand-slogan">传承红色基因 · 赓续红色血脉</div>
+    </div>
+
+    <div class="action">
+      <div class="dev-tip"><strong>当前为开发者工具</strong>手机号快捷验证需真机测试：点工具栏「预览」扫码</div>
+      <button class="login-btn">微信一键登录</button>
+      <div class="or-line"><span>或</span></div>
+      <button class="login-btn login-btn-second login-btn-off">手机号快捷登录（待微信认证）</button>
+      <div class="agree-row">
+        <div class="agree-check"></div>
+        <div class="agree-text">
+          我已阅读并同意
+          <span class="agree-link">《用户协议》</span>
+          <span class="agree-link">《数据隐私安全声明》</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="skip">暂不登录，先浏览</div>
+  </div>
+</body>
+</html>

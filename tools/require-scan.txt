@@ -1,0 +1,15 @@
+小程序端 require 静态解析体检
+时间：2026/11/12 10:03:35
+扫描目录：api, config, utils, pages, components + app.js
+规则：相对路径必须能解析到具体 .js 文件；指向「目录/index.js」一律判为错误。
+
+扫描文件：58 个，相对 require：120 处
+问题：0 处
+
+[PASS] 全部相对 require 均指向具体 .js 文件，无目录 index.js 依赖。
+
+===== 运行时模拟（禁用目录 index.js 解析） =====
+  [PASS] api/feedback.js 依赖链加载成功
+  [PASS] pages/profile/profile.js 依赖链加载成功
+
+提示：新增 require 后请重跑本脚本；它是 Node 自测覆盖不到的白屏防线。

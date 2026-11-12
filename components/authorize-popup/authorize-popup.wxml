@@ -6,17 +6,17 @@
   注意：小程序已无法通过弹窗"授权"获取昵称头像（wx.getUserProfile 已收回），
   所以这里文案强调"一键登录"，头像昵称在「我的」页由用户主动填写。
 -->
-<view class="auth-mask" wx:if="{{show}}" catchtouchmove="noop">
-  <!-- 弹窗主体：logo + 标题 + 说明文案 + 操作按钮 -->
-  <view class="auth-card">
+<view class="auth-mask" wx:if="{{show}}" catchtouchmove="noop" bindtap="onCancel">
+  <!-- 弹窗主体：logo + 标题 + 说明文案 + 操作按钮（阻止冒泡，避免点卡片误关） -->
+  <view class="auth-card" catchtap="noop">
     <view class="auth-logo">
       <image src="/images/logo.png" mode="aspectFit"></image>
     </view>
     <view class="auth-title">红色纪念馆</view>
     <view class="auth-desc">{{desc || '登录后可保存参观预约、查看答题战绩与反馈进度。'}}</view>
 
-    <!-- 微信一键登录：调 app.doLogin()，成功后关闭弹窗 -->
-    <view class="btn btn-primary auth-btn" bindtap="onLogin">微信一键登录</view>
+    <!-- 手机号快捷登录：统一跳独立登录页（协议勾选 + 微信手机号验证都在那边完成） -->
+    <view class="btn btn-primary auth-btn" bindtap="onLogin">手机号快捷登录</view>
     <!-- 游客模式：关闭弹窗继续浏览 -->
     <view class="auth-skip" bindtap="onCancel">暂不登录</view>
   </view>
